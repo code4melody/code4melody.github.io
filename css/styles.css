@@ -1,13 +1,15 @@
 .even {
+	text-align: center;
 	background-color: #f7beed;
-	width: 200px;
-	height: 200px;
+	width: 225px;
+	height: 225px;
 }
 
 .odd {
+	text-align: center;
 	background-color: #adf8ff;
-	width: 200px;
-	height: 200px;
+	width: 225px;
+	height: 225px;
 }
 
 table {
