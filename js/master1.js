@@ -143,3 +143,45 @@ function enterPlayer(player) {
 	var builder = playerName + "<br><img src='images/" + playerImage + ".jpeg' />"
 	document.getElementById(player + "Info").innerHTML = builder;
 }
+
+var turn = "O";
+var counterSquare = 0;
+
+function changeSquare(element) {
+	var player1Image = document.getElementById("player1Image").value;
+	var player2Image = document.getElementById("player2Image").value;
+
+
+	if (document.getElementById(element).innerHTML.length == 0) {
+		counterSquare++;
+
+		if (turn == "O") {
+			document.getElementById(element).innerHTML = "<img src='images/" + player1Image + ".jpeg' />";
+			turn = "kyle";
+		}
+
+		else {
+			document.getElementById(element).innerHTML = "<img src='images/" + player2Image + ".jpeg' />";
+			turn = "O";
+		}
+
+		if (counterSquare == 9) {
+			alert("Game over!");
+		}
+	}
+
+	else {
+		alert("This square is already taken!!")
+	}
+}
+
+function checkSquare() {
+	var innerHTML = document.getElementById("square0").innerHTML;
+	alert(innerHTML.length);
+}
+
+
+
+var innerHTML = "<img src='images/zapdos.jpeg' />";
+var position = innerHTML.indexOf("zapdos")
+// position = (number greater than -1)
