@@ -9,18 +9,17 @@
 <div id="gameArea">
 	<div id="gameBoard">
 <script>
-
 var counter = 0;
 var builder = "<table>";
 for (var i = 0; i < 3; i++) {
 	builder += "<tr>";
 	for (var j = 0; j < 3; j++) {
 		if (counter % 2 == 0) {
-			builder += "<td class='even'></td>";
+			builder += "<td onclick='changeSquare(\"square" + counter + "\")' class='even' id='square" + counter + "'></td>";
 		}
 
 		else {
-			builder += "<td class='odd'></td>";
+			builder += "<td onclick='changeSquare(\"square" + counter + "\")' class='odd' id='square" + counter + "'></td>";
 		}
 		counter++;
 	}
@@ -61,9 +60,7 @@ document.writeln(builder);
 
 
 <div>
-<button onclick="isPalindrome()">Check Palindrome</button>
-<br>
-<button onclick="convertRoman()">Check Roman</button>
+<button onclick="checkSquare()">Check Square</button>
 </div>
 </body>
 </html>
