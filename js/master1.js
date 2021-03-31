@@ -146,33 +146,118 @@ function enterPlayer(player) {
 
 var turn = "O";
 var counterSquare = 0;
-
+var gameover = false;
 function changeSquare(element) {
+	// Check whether avatars are set
 	var player1Image = document.getElementById("player1Image").value;
 	var player2Image = document.getElementById("player2Image").value;
 
-
-	if (document.getElementById(element).innerHTML.length == 0) {
-		counterSquare++;
-
-		if (turn == "O") {
-			document.getElementById(element).innerHTML = "<img src='images/" + player1Image + ".jpeg' />";
-			turn = "kyle";
-		}
-
-		else {
-			document.getElementById(element).innerHTML = "<img src='images/" + player2Image + ".jpeg' />";
-			turn = "O";
-		}
-
-		if (counterSquare == 9) {
-			alert("Game over!");
-		}
+	if (player1Image == "#" || player2Image == "#") {
+		alert("Please set the avatars first!");
 	}
 
 	else {
-		alert("This square is already taken!!")
+		// Check gameover
+		if (gameover) {
+			alert("Game has ended. Please reset board.");
+		}
+
+		else {
+
+			// Set player names
+			var player1Name = "O";
+			var player2Name = "X";
+
+			if (document.getElementById("player1Name").value) {
+				player1Name = document.getElementById("player1Name").value;
+			}
+
+			if (document.getElementById("player1Name").value) {
+				player2Name = document.getElementById("player2Name").value;
+			}
+
+			// Toggle squares
+			if (document.getElementById(element).innerHTML.length == 0) {
+				counterSquare++;
+
+				if (turn == "O") {
+					document.getElementById(element).innerHTML = "<img src='images/" + player1Image + ".jpeg' />";
+
+					if (checkHorizontal(player1Image) || checkVertical(player1Image) || checkDiagonal(player1Image)) {
+						alert(player1Name + " is the winner! Please reset board.");
+						gameover = true;
+					}
+
+					else {
+						turn = "X";
+					}
+				}
+
+				else {
+					document.getElementById(element).innerHTML = "<img src='images/" + player2Image + ".jpeg' />";
+					
+					if (checkHorizontal(player2Image) || checkVertical(player2Image) || checkDiagonal(player2Image)) {
+						alert(player2Name + " is the winner! Please reset board.");
+						gameover = true;
+					}
+
+					else {
+						turn = "O";
+					}
+				}
+
+				if (counterSquare == 9) {
+					gameover = true;
+				}
+			}
+
+			else {
+				alert("This square is already taken!!")
+			}
+		}
 	}
+}
+
+function checkHorizontal(playerImage) {
+	var square0 = document.getElementById("square0").innerHTML;
+	var square1 = document.getElementById("square1").innerHTML;
+	var square2 = document.getElementById("square2").innerHTML;
+	var square3 = document.getElementById("square3").innerHTML;
+	var square4 = document.getElementById("square4").innerHTML;
+	var square5 = document.getElementById("square5").innerHTML;
+	var square6 = document.getElementById("square6").innerHTML;
+	var square7 = document.getElementById("square7").innerHTML;
+	var square8 = document.getElementById("square8").innerHTML;
+
+	return ((square0 == square1 && square1 == square2 && square2 == square0 && square0.indexOf(playerImage) > -1) || (square3 == square4 && square4 == square5 && square3 == square5 && square3.indexOf(playerImage) > -1) || (square6 == square7 && square7 == square8 && square6 == square8 && square6.indexOf(playerImage) > -1))
+}
+
+function checkVertical(playerImage) {
+	var square0 = document.getElementById("square0").innerHTML;
+	var square1 = document.getElementById("square1").innerHTML;
+	var square2 = document.getElementById("square2").innerHTML;
+	var square3 = document.getElementById("square3").innerHTML;
+	var square4 = document.getElementById("square4").innerHTML;
+	var square5 = document.getElementById("square5").innerHTML;
+	var square6 = document.getElementById("square6").innerHTML;
+	var square7 = document.getElementById("square7").innerHTML;
+	var square8 = document.getElementById("square8").innerHTML;
+
+	return ((square0 == square3 && square3 == square6 && square0 == square6 && square0.indexOf(playerImage) > -1) || (square1 == square4 && square4 == square7 && square1 == square7 && square1.indexOf(playerImage) > -1) || (square2 == square5 && square5 == square8 && square2 == square8 && square2.indexOf(playerImage) > -1))
+}
+
+function checkDiagonal(playerImage) {
+	var square0 = document.getElementById("square0").innerHTML;
+	var square1 = document.getElementById("square1").innerHTML;
+	var square2 = document.getElementById("square2").innerHTML;
+	var square3 = document.getElementById("square3").innerHTML;
+	var square4 = document.getElementById("square4").innerHTML;
+	var square5 = document.getElementById("square5").innerHTML;
+	var square6 = document.getElementById("square6").innerHTML;
+	var square7 = document.getElementById("square7").innerHTML;
+	var square8 = document.getElementById("square8").innerHTML;
+	
+	return ((square0 == square4 && square4 == square8 && square0 == square8 && square0.indexOf(playerImage) > -1) || (square2 == square4 && square4 == square6 && square2 == square6 && square2.indexOf(playerImage) > -1))
 }
 
 function checkSquare() {
@@ -180,8 +265,13 @@ function checkSquare() {
 	alert(innerHTML.length);
 }
 
+function reset() {
+	for (var i = 0; i < 9; i++) {
+		var element = document.getElementById("square" + i);
+		element.innerHTML = "";
+	}
 
-
-var innerHTML = "<img src='images/zapdos.jpeg' />";
-var position = innerHTML.indexOf("zapdos")
-// position = (number greater than -1)
+	gameover = false;
+	counterSquare = 0;
+	turn = "O";
+}
