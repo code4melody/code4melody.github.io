@@ -172,7 +172,7 @@ function changeSquare(element) {
 				player1Name = document.getElementById("player1Name").value;
 			}
 
-			if (document.getElementById("player1Name").value) {
+			if (document.getElementById("player2Name").value) {
 				player2Name = document.getElementById("player2Name").value;
 			}
 
@@ -248,13 +248,13 @@ function checkVertical(playerImage) {
 
 function checkDiagonal(playerImage) {
 	var square0 = document.getElementById("square0").innerHTML;
-	var square1 = document.getElementById("square1").innerHTML;
+	//var square1 = document.getElementById("square1").innerHTML;
 	var square2 = document.getElementById("square2").innerHTML;
-	var square3 = document.getElementById("square3").innerHTML;
+	//var square3 = document.getElementById("square3").innerHTML;
 	var square4 = document.getElementById("square4").innerHTML;
-	var square5 = document.getElementById("square5").innerHTML;
+	//var square5 = document.getElementById("square5").innerHTML;
 	var square6 = document.getElementById("square6").innerHTML;
-	var square7 = document.getElementById("square7").innerHTML;
+	//var square7 = document.getElementById("square7").innerHTML;
 	var square8 = document.getElementById("square8").innerHTML;
 	
 	return ((square0 == square4 && square4 == square8 && square0 == square8 && square0.indexOf(playerImage) > -1) || (square2 == square4 && square4 == square6 && square2 == square6 && square2.indexOf(playerImage) > -1))
@@ -267,11 +267,16 @@ function checkSquare() {
 
 function reset() {
 	for (var i = 0; i < 9; i++) {
+		/*
 		var element = document.getElementById("square" + i);
 		element.innerHTML = "";
+		*/
+
+		document.getElementById("square" + i).innerHTML = "";
 	}
 
 	gameover = false;
 	counterSquare = 0;
 	turn = "O";
 }
+
