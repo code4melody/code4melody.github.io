@@ -1,64 +1,371 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>All About Rei</title>
-</head>
-<body>
-<h1>Hello World! This is Rei's first new webpage!</h1>
-<h2>My Hobbies</h2>
-<ol type="A" start="3">
-	<li>Origami</li>
-	<li>Praise</li>
-	<li>Snowboarding</li>
-	<li>Coding</li>
-</ol>
-<hr>
-<b>My Favorite Website:</b> <a href="https://www.churcheveryday.org/">Church Everyday Homepage</a>
-<div>
-<i>My Favorite Pokemon:</i> <a href="https://bulbapedia.bulbagarden.net/wiki/Dragonite_(Pok%C3%A9mon)">Dragonite</a>
-<br><img src="https://cdn.bulbagarden.net/upload/thumb/8/8b/149Dragonite.png/500px-149Dragonite.png" />
-</div>
-<u>My Social Media</u>
-<br>
-<a href="https://www.facebook.com/reidatiga"><img src="images/facebook.png" /></a>&nbsp;
-<a href="https://www.instagram.com/melody4praise"><img src="images/instagram.png" /></a>&nbsp;
-<a href="https://www.linkedin.com/in/jeehoon-rei-song-0772a81a/"><img src="images/linkedin.png" /></a>&nbsp;
-<a href=""><img src="images/tiktok.png" /></a>&nbsp;
-<a href="https://www.twitter.com/reidatiga"><img src="images/twitter.png" /></a>&nbsp;
-<a href=""><img src="images/snapchat.png" /></a>&nbsp;
-<br>
-<br>
-<table border='1'>
-	<tr>
-		<th>Me</th>
-		<th>Wife</th>
-		<th>Daughter 1</th>
-		<th>Daughter 2</th>
-	</tr>
-	<tr>
-		<td>
-			<img src="images/rei.png" />
-		</td>
-		<td>
-			<img src="images/wife.png" />
-		</td>
-		<td>
-			<img src="images/melody.png" />
-		</td>
-		<td>
-			<img src="images/praise.png" />
-		</td>
-	</tr>
-	<tr>
-		<td rowspan="2">My Crush</td>
-		<td colspan="3">Pastor Kevin</td>
-	</tr>
-	<tr>
-		<td colspan="3">
-			<img src="images/crush.jpg" />
-		</td>
-	</tr>
-</table>
+    <head>
+    	<script type="text/javascript" src="cordova.js"></script>
+    	<!-- 
+user-scalable=no doesn't allow users to zoom
+initial-scale=1 means the zoom level when the app is loaded. 1=100%
+maximum-scale=1 means the max zoom level user can zoom
+minimum-scale-1 means the min zoom level user can zoom
+-->
+<meta name="viewport" content="user-scalable=no, initial-scale=1, width=device-width, height=device-height, viewport-fit=cover">
+    	<style>
+		html,
+		body {
+			font-family: sans-serif;
+			height: 100%;
+			overflow: hidden;
+		}
 
-</body>
+		body {
+			margin: auto 0;
+			background-image: repeating-linear-gradient(
+				0deg, #d1eeff, #d1eeff 1px,#f8fcc7 1px, #f8fcc7 30px);
+			text-align: center;
+		}
+
+		#pageContainer {
+			min-height: 100%;
+			height: 100%;
+			width: 100%;
+			text-align: center;
+		}
+
+		#buttonContainer {
+			padding: 10px;
+		}
+
+		.buttons {
+			padding: 5px;
+			border-radius: 3px;
+			font-size: 1em;
+			background-color: #FFFFFF;
+		}
+
+		select {
+			font-size: 0.8em;
+		}
+
+		#problems {
+			width: 100%;
+		}
+
+		table {
+			height: 80%;
+			margin: 0 auto;
+			font-size: 2.5em;
+		}
+
+		table tr {
+			padding: 3px;
+			vertical-align: middle;
+		}
+
+		input {
+			font-size: 0.6em;
+		}
+
+		.answers {
+			font-size: 0.8em;
+		}
+
+		#operations {
+			width: 100%;
+			border-top: 1px solid black;
+			padding-top: 2px;
+			padding-bottom: 2px;
+			position: fixed;
+			bottom: 0;
+		}
+
+		.operator {
+			width: 23%;
+			display: inline-block;
+			text-align: center;
+			font-size: 2.5em;
+			vertical-align: middle;
+		}
+
+		.right-border {
+			border-right: 1px solid black;
+		}
+	</style>
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, height=device-height">
+        <title>Infinite Arithmetic</title>
+    </head>
+    <script>
+var currentOperator = '+';
+var operand1 = 1;
+var operand2 = 1;
+var numProblems = 8;
+var nextValid = false;
+var page = 1;
+
+function checkAnswers() {
+	var correct = 0;
+	for (var i = 1; i <= numProblems; i++) {
+		var num1 = Number(document.getElementById("num1_row" + i).innerText);
+		var num2 = Number(document.getElementById("num2_row" + i).innerText);
+		
+		if (currentOperator != "/") {
+			var correctAnswer;
+			switch (currentOperator) {
+				case "+":
+					correctAnswer = num1 + num2;
+					break;
+				case "-":
+					correctAnswer = num1 - num2;
+					break;
+				default:
+					correctAnswer = num1 * num2;
+					break;
+			}
+
+			if (correctAnswer == Number(document.getElementById("entry" + i).value)) {
+				document.getElementById("answerCheck" + i).innerHTML = "<span style='color: #00FF00; font-weight: bold;'>O</span>";
+				correct++;
+			}
+
+			else {
+				document.getElementById("answerCheck" + i).innerHTML = "<span style='color: #FF0000; font-weight: bold;'>X</span>";
+			}
+		}
+
+		else {
+			var quotient = Math.floor(num1 / num2);
+			var remainder = num1 % num2;
+
+			if (quotient == Number(document.getElementById("entry" + i).value) && remainder == document.getElementById("entryRemainder" + i).value) {
+				document.getElementById("answerCheck" + i).innerHTML = "<span style='color: #00FF00; font-weight: bold;'>O</span>";
+				correct++;
+			}
+
+			else {
+				document.getElementById("answerCheck" + i).innerHTML = "<span style='color: #FF0000; font-weight: bold;'>X</span>";
+			}
+		}
+	}
+
+	if (correct == numProblems) {
+		nextValid = true;
+	}
+}
+
+function showAnswers() {
+	for (var i = 1; i <= numProblems; i++) {
+		var num1 = Number(document.getElementById("num1_row" + i).innerText);
+		var num2 = Number(document.getElementById("num2_row" + i).innerText);
+		if (currentOperator != "/") {
+			var correctAnswer;
+			switch (currentOperator) {
+				case "+":
+					correctAnswer = num1 + num2;
+					break;
+				case "-":
+					correctAnswer = num1 - num2;
+					break;
+				default:
+					correctAnswer = num1 * num2;
+					break;
+			}
+
+			document.getElementById("entry" + i).value = correctAnswer;
+		}
+
+		else {
+			var quotient = Math.floor(num1 / num2);
+			var remainder = num1 % num2;
+			document.getElementById("entry" + i).value = quotient;
+			document.getElementById("entryRemainder" + i).value = remainder;
+		}
+	}
+}
+function refresh() {
+	//var operand1_digits = document.getElementById("operand1_digits").value;
+	//var operand2_digits = document.getElementById("operand2_digits").value;
+
+	if (currentOperator == "-" && (operand2 > operand1)) {
+		document.getElementById("problems").innerHTML = "Operand 2 cannot be greater than Operand 1 for subtraction!";
+	}
+
+	else {
+		var builder = "<h1>Page " + page + "</h1><table";
+		if (operand1 == 2 || operand2 == 2) {
+			builder += " style='font-size: 2em;'";
+		}
+
+		else if (operand1 == 3 || operand2 == 3) {
+			builder += " style='font-size: 1.8em;'";
+		}
+
+		else {
+			builder += " style='font-size: 2.5em;'";
+		}
+
+		builder += ">";
+
+		for (var i = 1; i <= numProblems; i++) {
+			var num1;
+			if (operand1 == 1) {
+				num1 = Math.floor(Math.random() * 10);
+			}
+
+			else {
+				num1 = Math.floor(Math.random() * (Math.pow(10, operand1) - (Math.pow(10, (operand1 - 1))))) + Math.pow(10, (operand1 - 1));
+			}
+
+			var num2;
+
+			if (currentOperator == "-") {
+				if (operand2 == 1) {
+
+					if (operand1 > 1) {
+						num2 = Math.floor(Math.random() * 10);
+					}
+
+					else {
+						num2 = Math.floor(Math.random() * num1);
+					}
+				}
+
+				else {
+					if (operand1 > operand2) {
+						num2 = Math.floor(Math.random() * (Math.pow(10, operand2) - (Math.pow(10, (operand2 - 1))))) + Math.pow(10, (operand2 - 1));
+					}
+
+					else {
+						num2 = Math.floor(Math.random() * (num1 - Math.pow(10, (operand2 - 1)) + 1)) + Math.pow(10, (operand2 - 1));
+					}
+				}
+			}
+
+
+			else if (currentOperator == "/") {
+				if (operand2 == 1) {
+					num2 = Math.floor(Math.random() * (10 - 1)) + 1;
+				}
+
+				else {
+					num2 = Math.floor(Math.random() * (Math.pow(10, operand2) - (Math.pow(10, (operand2 - 1))))) + Math.pow(10, (operand2 - 1));
+				}
+			}
+
+			else {
+				if (operand2 == 1) {
+					num2 = Math.floor(Math.random() * 10);
+				}
+
+				else {
+					num2 = Math.floor(Math.random() * (Math.pow(10, operand2) - (Math.pow(10, (operand2 - 1))))) + Math.pow(10, (operand2 - 1));
+				}
+			}
+			
+
+
+
+			builder += "<tr><td colspan='6'></td></tr><tr><td colspan='6'></td></tr><tr><td colspan='6'></td></tr><tr><td id='answerCheck"+ i + "' class='answers'></td><td id='num1_row" + i + "'>" + num1 + "</td><td>" + currentOperator + "</td><td id='num2_row" + i + "'>" + num2 + "</td><td>=</td><td style='vertical-align: middle;'>";
+
+			if (currentOperator == "/") {
+				builder += "<input size='4' type='tel' id='entry" + i + "' required /><span style='font-size: 0.5em;'>R</span>";
+				builder += "<input size='4' type='tel' id='entryRemainder" + i + "' required /></td></tr>";
+			}
+
+			else {
+				builder += "<input size='7' type='tel' id='entry" + i + "' required /></td></tr>";
+			}
+		}
+
+		builder += "</table>";
+
+		document.getElementById("problems").innerHTML = builder;
+	}
+}
+
+function newOperator(operator) {
+	var operand1_digits = document.getElementById("operand1_digits").value;
+	var operand2_digits = document.getElementById("operand2_digits").value;
+
+	if (operator == "-" && (Number(operand2_digits) > Number(operand1_digits))) {
+		document.getElementById("problems").innerHTML = "Operand 2 cannot be greater than Operand 1 for subtraction!";
+	}
+
+	else {
+		currentOperator = operator;
+		refresh();
+	}
+}
+
+function setDigitLength(operandNum) {
+	var operand1_digits = document.getElementById("operand1_digits").value;
+	var operand2_digits = document.getElementById("operand2_digits").value;
+
+	if (operandNum == 1) {
+			operand1 = Number(operand1_digits);
+		}
+
+	else {
+		operand2 = Number(operand2_digits);
+	}
+
+	if (currentOperator == "-" && (Number(operand2_digits) > Number(operand1_digits))) {
+		document.getElementById("problems").innerHTML = "Operand 2 cannot be greater than Operand 1 for subtraction!";
+	}
+
+	else {
+		refresh();
+	}
+}
+
+function nextSet() {
+	if (nextValid) {
+		page++;
+		refresh();
+		nextValid = false;
+	}
+
+	else {
+		alert("Please answer all questions correctly before going to the next page!")
+	}
+}
+
+</script>
+    <body onload="refresh()">
+        <h2>Infinite ∞ Arithmetic</h2>
+        <div id="pageContainer">
+		<div id="buttonContainer">
+			
+			<!--
+			&nbsp;&nbsp;
+			<span class="buttons" onclick="showAnswers()">Show Answers</span>
+			-->
+Digits - Num 1
+<select id="operand1_digits" onchange="setDigitLength(1)">
+	<option value="1">1</option>
+	<option value="2">2</option>
+	<option value="3">3</option>
+</select>
+&nbsp;&nbsp;
+Num 2
+<select id="operand2_digits" onchange="setDigitLength(2)">
+	<option value="1">1</option>
+	<option value="2">2</option>
+	<option value="3">3</option>
+</select>
+</div>
+<hr>
+<div id="problems">
+</div>
+<br>
+<br>
+<span class="buttons" onclick="checkAnswers()" style='font-size: 1.8em;'>Check Answers</span>&nbsp;&nbsp;
+<span class="buttons" onclick="nextSet()" style='font-size: 1.8em;'>Next</span>
+</div>
+<div id="operations">
+	<div class="operator right-border" onclick="newOperator('+')">+</div>
+	<div class="operator right-border" onclick="newOperator('-')">-</div>
+	<div class="operator right-border" onclick="newOperator('x')">x</div>
+	<div class="operator" onclick="newOperator('/')">/</div>
+</div>
+    </body>
 </html>
