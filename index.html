@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Jeopardy!</title>
+<script>
+var questions = ["Question1", "Question2", "Question3", "Question4", "Question5", "Question6", "Question7", "Question8", "Question9", "Question10", "Question11", "Question12", "Question13", "Question14", "Question15", "Question16", "Question17", "Question18", "Question19", "Question20", "Question21", "Question22", "Question23", "Question24", "Question25", "Question26", "Question27", "Question28", "Question29", "Question30"];
+var factsSize = facts.length
+function setupBoard() {
+	var questionCounter = 0
+	var builder = "<table id='jeopardyBoard'>"
+	builder += "<tr><th>Category 1</th><th>Category 2</th><th>Category 3</th><th>Category 4</th><th>Category 5</th><th>Category 6</th>"
+
+	for (var i = 0; i < 5; i++) {
+		builder += "<tr>";
+		for (var j = 0; j < 6; j++) {
+			builder += "<td class='questionBox' onclick='showQuestion(" + questionCounter + ")' id='question" + questionCounter + "'>";
+			builder += 100 * (i + 1)
+			builder += "</td>"
+			questionCounter++
+		}
+
+		builder += "</tr>";
+	}
+
+	builder += "</table>";
+	document.getElementById("board").innerHTML = builder;
+}
+
+function showQuestion(index) {
+	alert(questions[index])
+}
+
+</script>
+<style>
+</style>
+</head>
+<body onload="setupBoard()">
+<div id="header">MARK JEOPARDY
+</div>
+<br>
+<div id="board">
+</div>
+</body>
+</html>
