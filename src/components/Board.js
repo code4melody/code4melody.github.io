@@ -16,12 +16,12 @@ const Board = () => {
 		<table id="jeopardyBoard">
 			<thead>
 				<tr>
-					<th>BOOLEAN MARK</th>
-					<th>HE BREWS ARAMAIC</th>
-					<th>NUMBERS & MARK</th>
-					<th>BOYS & GIRLS</th>
-					<th>MOVE IT MOVE IT</th>
-					<th>ANYTHING GOES</th>
+					<th className="titles">BOOLEAN MARK</th>
+					<th className="titles">HE BREWS ARAMAIC</th>
+					<th className="titles">NUMBERS & MARK</th>
+					<th className="titles">BOYS & GIRLS</th>
+					<th className="titles">MOVE IT MOVE IT</th>
+					<th className="titles">ANYTHING GOES</th>
 				</tr>
 			</thead>
 			<tbody>
