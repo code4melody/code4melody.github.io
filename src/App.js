@@ -1,6 +1,9 @@
 import React from 'react';
+import Board from "./components/Board";
 
 const App = () => {
-  return <div>Hello, world!</div>;
+  return (
+	<Board />
+  )
 };
 export default App;

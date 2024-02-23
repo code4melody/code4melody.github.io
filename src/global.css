@@ -1,0 +1,13 @@
+#jeopardyBoard td, th {
+	border: 1px solid black;
+	padding: 15px;
+	font-size: 3em;
+	width: 15%;
+	text-align: center;
+	color: white;
+	background-color: #036bfc;
+}
+
+#header {
+	text-align: center;
+}
