@@ -6,7 +6,7 @@
 	font-size: 3em;
 	width: 15%;
 	text-align: center;
-	color: white;
+	color: #e6d115;
 	background-color: #036bfc;
 	font-family: "Play", sans-serif;
 	font-weight: 700;
@@ -19,6 +19,15 @@
 	font-size: 60px;
   	font-weight: 400;
   	font-style: normal;
+  	color: white;
+}
+
+#scorelink {
+	font-family: "Bungee Inline", sans-serif;
+	font-size: 40px;
+  	font-weight: 400;
+  	font-style: normal;
+  	color: white;
 }
 
 .modalBox {
@@ -35,4 +44,9 @@
 	padding: 100px;
 	background-color: white;
 	color: black;
+	font-size: 2.5em;
+}
+
+body {
+	background-color: #5c5b5a;
 }
