@@ -1,0 +1,92 @@
+<html>
+<head>
+<title>Roots Bingo!</title>
+<script>
+var facts = ["Can sing this note given E note<br><img src='a_note.jpg' width='100px' />", "Can solve this integral (and perform special gesture)<br><img src='integral.png' width='75px' />", "Knows balanced chemical equation for cell respiration (exclude ATP)", "Can do 25 *regular* pushups in one go", "Can graph y = |x| using their arms", "Can say \"I love you\" in 5 different languages (excluding English)", "Knows what \"Hay un gato feo en mi casa\" means", "Can state what the 4th state of matter is", "Confident that they can solve today's Wordle in front of everyone", "Can name all the Infinity Stones and their colors (MCU version)", "Remembers the title of Rei teacher's favorite Disney Song", "Knows how many yards are in a mile", "Knows how many faces there are in an icosahedron", "Can tell you squares of a number from 1 to 20, without a calculator", "Can tell you the names of all the Harry Potter books, in reverse chronological order of release", "Can tell the sum of interior angles of an Octagon", "Knows what \"Les chiens sont meilleurs que les chats\" means", "Knows the accelation due to earth's gravity in m/(sec)^2", "Knows the chorus of \"Living Hope\" by memory", "Knows the value of Pi, up to 3 decial points", "Can name 15 Pokemons", "Can do horizontal OR vertical split", "Came out to Holy Habit morning prayer every day this week", "Can name 6 of Jacob's 13 children"];
+var factsSize = facts.length
+function setupBoard() {
+	var counter = 0;
+	var builder = "<table id='bingoBoard'>"
+
+	for (var i = 0; i < 5; i++) {
+		builder += "<tr>";
+		for (var j = 0; j < 5; j++) {
+
+			if (i == 2 && j == 2) {
+				builder += "<td class='bingoCell centerCell'>*FREE*</td>";
+			}
+
+			else {
+				
+				var factIndex = Math.floor(Math.random() * factsSize);
+				builder += "<td class='bingoCell' onclick='enterName(this)'><span class='fact'>";
+				builder += facts[factIndex];
+				builder += "</span></td>";
+
+				facts.splice(factIndex, 1);
+				factsSize--;
+			}
+		}
+
+		builder += "</tr>";
+	}
+
+	builder += "</table>";
+	document.getElementById("board").innerHTML = builder;
+}
+
+function enterName(element) {
+	var name = prompt("Who fits this description? Enter their FULL name :D");
+
+	if (name !== null) {
+		element.innerHTML = "<span class='fact'>" + element.getElementsByClassName("fact")[0].innerHTML + "</span><br><br><span class='fullName'>" + name + "</span>";
+		element.style.backgroundColor = "#a0ffd2";
+	} 
+}
+
+</script>
+<style>
+#header {
+	text-align: center;
+	background-color: #fff3b7;
+	font-family: sans-serif;
+	font-size: 3em;
+	padding: 15px;
+}
+
+#board {
+	font-family: sans-serif;
+	background-color: #b7efff;
+}
+
+#bingoBoard {
+	margin:  auto;
+}
+
+.bingoCell {
+	width:  200px;
+	height:  200px;
+	border:  2px solid #52eaba;
+	border-radius: 5px;
+	border-spacing: 10px;
+	text-align: center;
+	background-color: white;
+}
+
+.centerCell {
+	background-color:  #ff9999;
+}
+
+.fullName {
+	font-weight: bold;
+}
+
+</style>
+</head>
+<body onload="setupBoard()">
+<div id="header">Roots Bingo!
+</div>
+<div id="board">
+</div>
+</body>
+</html>
