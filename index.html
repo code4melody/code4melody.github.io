@@ -72,24 +72,27 @@
             margin-bottom: 15px;
         }
 
-        .image-viewport {
+        /* Viewport styled to contain the embedded video frame cleanly */
+        .video-viewport {
             width: 100%;
-            height: 340px;
+            height: 310px;
             border-radius: 12px;
             background-color: #111;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position: relative;
             overflow: hidden;
             margin-bottom: 25px;
             border: 2px solid #2a2a32;
         }
 
-        .image-viewport img {
+        .video-viewport iframe {
+            position: absolute;
+            top: 50%;
+            left: 50%;
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            object-position: center top;
+            transform: translate(-50%, -50%);
+            border: none;
+            pointer-events: none; /* Prevents clicking inside the video player controls */
         }
 
         .options-grid {
@@ -183,8 +186,8 @@
                 <div class="progress-bar" id="progress-bar"></div>
             </div>
 
-            <div class="image-viewport">
-                <img id="star-image" src="" alt="K-pop Idol Profile">
+            <div class="video-viewport">
+                <iframe id="quiz-video-frame" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
             </div>
 
             <div class="options-grid" id="options-container"></div>
@@ -201,105 +204,105 @@
     </div>
 
     <script>
-        // Updated array using direct, unfonced raw image paths from unrestricted public servers
+        // Official YouTube video embed IDs mapped with start time parameters to zoom right onto the artist
         const quizData = [
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/1/18/Ros%C3%A9_at_Pre-Incheon_Airport_230911.png",
+                ytId: "v7bnOxuh8RM", start: 73, // Rosé - Apt
                 options: ["Jennie (BLACKPINK)", "Rosé (BLACKPINK)", "Jisoo (BLACKPINK)", "Lisa (BLACKPINK)"],
                 correct: 1
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/d/df/Jungkook_at_Incheon_Airport_230408.png",
+                ytId: "WMweEpGlu_U", start: 83, // Jungkook - Seven
                 options: ["V (BTS)", "Jimin (BTS)", "Jungkook (BTS)", "Suga (BTS)"],
                 correct: 2
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/1/15/Jang_Won-young_at_Incheon_Airport_on_March_4%2C_2024.jpg",
+                ytId: "Ph6t93s9nLU", start: 53, // IVE - Accendio (Wonyoung Focus)
                 options: ["Karina (aespa)", "Jang Wonyoung (IVE)", "Minji (NewJeans)", "Sana (TWICE)"],
                 correct: 1
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Felix_at_Incheon_Airport_231129.png",
+                ytId: "A7_4KOfpG_M", start: 29, // Stray Kids - Chk Chk Boom (Felix Focus)
                 options: ["Felix (Stray Kids)", "Hyunjin (Stray Kids)", "Bang Chan (Stray Kids)", "Lee Know (Stray Kids)"],
                 correct: 0
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/b/ba/Jennie_Kim_at_Incheon_Airport_230302.png",
+                ytId: "HaaZKKeeO2s", start: 51, // Jennie - Mantra
                 options: ["Ningning (aespa)", "Joy (Red Velvet)", "Jennie (BLACKPINK)", "Momo (TWICE)"],
                 correct: 2
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/b/b5/V_at_Incheon_Airport_230515.png",
+                ytId: "UuV2BmJ1p_Y", start: 104, // V - Fri(end)s
                 options: ["Jin (BTS)", "RM (BTS)", "J-Hope (BTS)", "V (BTS)"],
                 correct: 3
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Yoo_Ji-min_at_Incheon_Airport_230508.png",
+                ytId: "iSxe6K_pSsc", start: 30, // aespa - Whiplash (Karina Focus)
                 options: ["Karina (aespa)", "Winter (aespa)", "Giselle (aespa)", "Sullyoon (NMIXX)"],
                 correct: 0
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/8/82/Kim_Min-ji_at_Incheon_Airport_230303.png",
+                ytId: "pSUydWEqKwE", start: 33, // NewJeans - How Sweet (Minji Focus)
                 options: ["Hanni (NewJeans)", "Haerin (NewJeans)", "Danielle (NewJeans)", "Minji (NewJeans)"],
                 correct: 3
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/a/ab/Sana_at_Incheon_Airport_220726.png",
+                ytId: "T7eYI7g6z4U", start: 87, // TWICE - Strategy (Sana Focus)
                 options: ["Nayeon (TWICE)", "Sana (TWICE)", "Mina (TWICE)", "Tzuyu (TWICE)"],
                 correct: 1
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/c/c5/Hwang_Hyun-jin_at_Incheon_Airport_230514.png",
+                ytId: "jYSlpC6vOks", start: 45, // Stray Kids - LALALALA (Hyunjin Focus)
                 options: ["Han (Stray Kids)", "Yeonjun (TXT)", "Hyunjin (Stray Kids)", "Sunghoon (ENHYPEN)"],
                 correct: 2
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/9/91/Lalisa_Manobal_at_Incheon_Airport_230303.png",
+                ytId: "m_Y3_m27g64", start: 38, // Lisa - Rockstar
                 options: ["Lisa (BLACKPINK)", "Minnie ((G)I-DLE)", "Somi", "Moka (ILLIT)"],
                 correct: 0
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/a/ab/Cha_Eun-woo_at_Incheon_Airport_230616.png",
+                ytId: "Ww7_bW_O5YI", start: 42, // Cha Eunwoo - Stay
                 options: ["Jaehyun (NCT)", "Cha Eunwoo (ASTRO)", "Rowoon", "Mingyu (SEVENTEEN)"],
                 correct: 1
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Kim_Min-jeong_at_Incheon_Airport_230508.png",
+                ytId: "0M36ObeFqG8", start: 42, // aespa - Armageddon (Winter Focus)
                 options: ["Ningning (aespa)", "Winter (aespa)", "Kazuha (LE SSERAFIM)", "Eunbi"],
                 correct: 1
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/5/52/Kim_Chae-won_at_Incheon_Airport_221211.png",
+                ytId: "kAnv2Y-Fms4", start: 40, // LE SSERAFIM - Crazy (Chaewon Focus)
                 options: ["Sakura (LE SSERAFIM)", "Kim Chaewon (LE SSERAFIM)", "Yunjin (LE SSERAFIM)", "Rei (IVE)"],
                 correct: 1
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/0/07/Hanni_at_Incheon_Airport_230222.png",
+                ytId: "K6Z-goxm63s", start: 53, // NewJeans - Bubble Gum (Hanni Focus)
                 options: ["Hanni (NewJeans)", "Danielle (NewJeans)", "Ahyeon (BABYMONSTER)", "Wonhee (ILLIT)"],
                 correct: 0
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/7/77/IU_at_Incheon_Airport_240310.jpg",
+                ytId: "JleoAppaxi0", start: 46, // IU - Love Wins All
                 options: ["Taeyeon", "IU", "Suzy", "Nayeon (TWICE)"],
                 correct: 1
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/0/0b/Park_Ji-min_at_Incheon_Airport_230513.png",
+                ytId: "c6A_N9IhSsw", start: 104, // Jimin - Who
                 options: ["Suga (BTS)", "J-Hope (BTS)", "Jimin (BTS)", "Jin (BTS)"],
                 correct: 2
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Kim_Ji-soo_at_Incheon_Airport_230303.png",
+                ytId: "vT1_99K0Vb4", start: 34, // Jisoo - Flower
                 options: ["Jisoo (BLACKPINK)", "Irene (Red Velvet)", "Miyeon ((G)I-DLE)", "Sullyoon (NMIXX)"],
                 correct: 0
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Kim_Min-gyu_at_Incheon_Airport_on_February_26%2C_240226.jpg",
+                ytId: "X_DNiYenr2o", start: 50, // SEVENTEEN - Maestro (Mingyu Focus)
                 options: ["Hoshi (SEVENTEEN)", "Wonwoo (SEVENTEEN)", "Scoups (SEVENTEEN)", "Mingyu (SEVENTEEN)"],
                 correct: 3
             },
             {
-                img: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Choi_Yeon-jun_at_Incheon_Airport_230303.png",
+                ytId: "S_rZ7Xm7rGg", start: 79, // TXT - Over The Moon (Yeonjun Focus)
                 options: ["Soobin (TXT)", "Yeonjun (TXT)", "Beomgyu (TXT)", "Heeseung (ENHYPEN)"],
                 correct: 1
             }
@@ -312,7 +315,7 @@
         const resultView = document.getElementById('result-view');
         const counterEl = document.getElementById('question-counter');
         const progressBar = document.getElementById('progress-bar');
-        const starImage = document.getElementById('star-image');
+        const videoFrame = document.getElementById('quiz-video-frame');
         const optionsContainer = document.getElementById('options-container');
         const nextButton = document.getElementById('next-button');
         const finalScoreEl = document.getElementById('final-score');
@@ -336,7 +339,8 @@
             const progressPercent = ((currentQuestionIndex) / quizData.length) * 100;
             progressBar.style.width = `${progressPercent}%`;
 
-            starImage.src = currentQuestion.img;
+            // Constructs embedded URL with controls hidden, muted, and auto-looping parameters
+            videoFrame.src = `https://www.youtube.com/embed/${currentQuestion.ytId}?start=${currentQuestion.start}&autoplay=1&mute=1&controls=0&modestbranding=1&loop=1&playlist=${currentQuestion.ytId}`;
 
             currentQuestion.options.forEach((optionText, index) => {
                 const button = document.createElement('button');
@@ -375,6 +379,7 @@
 
         function showResults() {
             progressBar.style.width = '100%';
+            videoFrame.src = ''; // Shut down the running video frame
             quizView.classList.add('hide');
             resultView.classList.remove('hide');
             
