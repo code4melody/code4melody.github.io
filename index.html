@@ -3,29 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate K-Pop Star Quiz</title>
+    <title>K-Pop Idol Guessing Quiz</title>
     <style>
         :root {
-            --primary: #ff4a8d;
-            --primary-hover: #e03273;
-            --bg-dark: #121214;
-            --card-bg: #1e1e24;
-            --text-light: #ffffff;
-            --text-muted: #a0a0ab;
-            --correct: #4caf50;
-            --incorrect: #f44336;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --correct: #10b981;
+            --wrong: #ef4444;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
+            background-color: var(--bg-color);
+            color: var(--text-main);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -36,371 +36,383 @@
         .quiz-container {
             background-color: var(--card-bg);
             width: 100%;
-            max-width: 550px;
+            max-width: 500px;
             border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            padding: 30px;
+            padding: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
             text-align: center;
-            overflow: hidden;
         }
 
-        h1 {
-            font-size: 1.8rem;
-            color: var(--primary);
-            margin-bottom: 5px;
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .score-tracker, .progress-text {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-weight: 600;
         }
 
         .progress-bar-container {
             width: 100%;
             height: 6px;
-            background-color: #333;
-            border-radius: 3px;
-            margin: 20px 0;
+            background-color: #334155;
+            border-radius: 10px;
+            margin-bottom: 24px;
             overflow: hidden;
         }
 
         .progress-bar {
             height: 100%;
             width: 0%;
-            background-color: var(--primary);
+            background-color: var(--accent);
             transition: width 0.3s ease;
         }
 
-        .stats-text {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-        }
-
-        /* Viewport styled to contain the embedded video frame cleanly */
-        .video-viewport {
+        .image-frame {
             width: 100%;
-            height: 310px;
+            height: 320px;
             border-radius: 12px;
-            background-color: #111;
-            position: relative;
             overflow: hidden;
-            margin-bottom: 25px;
-            border: 2px solid #2a2a32;
+            background-color: #334155;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .video-viewport iframe {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+        .image-frame img {
             width: 100%;
             height: 100%;
-            transform: translate(-50%, -50%);
-            border: none;
-            pointer-events: none; /* Prevents clicking inside the video player controls */
+            object-fit: cover;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-weight: 700;
         }
 
         .options-grid {
-            display: grid;
-            grid-template-columns: 1fr;
+            display: flex;
+            flex-direction: column;
             gap: 12px;
             margin-bottom: 20px;
         }
 
         .option-btn {
-            background-color: #2a2a32;
-            color: var(--text-light);
+            background-color: #334155;
+            color: var(--text-main);
             border: 2px solid transparent;
-            padding: 14px 20px;
+            padding: 14px;
+            border-radius: 10px;
             font-size: 1rem;
-            font-weight: 600;
-            border-radius: 8px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
-            text-align: center;
+            text-align: left;
         }
 
-        .option-btn:hover:not([disabled]) {
-            background-color: #353540;
-            border-color: var(--primary);
+        .option-btn:hover:not(:disabled) {
+            background-color: #475569;
+            border-color: var(--text-muted);
         }
 
-        .option-btn[disabled] {
+        .option-btn:disabled {
             cursor: not-allowed;
         }
 
         .option-btn.correct {
-            background-color: var(--correct) !important;
-            color: white;
+            background-color: rgba(16, 185, 129, 0.2);
+            border-color: var(--correct);
+            color: #34d399;
+            font-weight: 600;
         }
 
-        .option-btn.incorrect {
-            background-color: var(--incorrect) !important;
-            color: white;
+        .option-btn.wrong {
+            background-color: rgba(239, 68, 68, 0.2);
+            border-color: var(--wrong);
+            color: #f87171;
         }
 
         .next-btn {
-            background-color: var(--primary);
+            background-color: var(--accent);
             color: white;
             border: none;
-            padding: 12px 30px;
+            padding: 14px;
+            width: 100%;
+            border-radius: 10px;
             font-size: 1rem;
-            font-weight: bold;
-            border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
-            display: inline-block;
             transition: background 0.2s ease;
-            margin-top: 10px;
+            display: none;
         }
 
         .next-btn:hover {
-            background-color: var(--primary-hover);
+            background-color: var(--accent-hover);
         }
 
-        .hide {
-            display: none !important;
+        .results-screen {
+            display: none;
         }
 
-        .result-title {
+        .results-screen h1 {
             font-size: 2rem;
-            margin-bottom: 15px;
-            color: var(--primary);
+            margin-bottom: 12px;
         }
 
-        .score-display {
+        .final-score {
             font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 20px 0;
         }
 
-        .feedback-msg {
-            color: var(--text-muted);
-            margin-bottom: 30px;
-            font-size: 1.1rem;
+        .restart-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
     <div class="quiz-container">
-        <div id="quiz-view">
-            <h1>Guess the K-Pop Star!</h1>
-            <div class="stats-text" id="question-counter">Question 1 of 20</div>
+        <!-- Quiz Play Window -->
+        <div id="quiz-window">
+            <div class="header-info">
+                <span class="progress-text" id="progress-text">Question 1/20</span>
+                <span class="score-tracker" id="score-tracker">Score: 0</span>
+            </div>
             
             <div class="progress-bar-container">
                 <div class="progress-bar" id="progress-bar"></div>
             </div>
 
-            <div class="video-viewport">
-                <iframe id="quiz-video-frame" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+            <div class="image-frame">
+                <img id="idol-image" src="" alt="K-Pop Idol Profile">
             </div>
 
-            <div class="options-grid" id="options-container"></div>
+            <h2>Who is this idol?</h2>
 
-            <button id="next-button" class="next-btn hide">Next Question</button>
+            <div class="options-grid" id="options-container">
+                <!-- Javascript maps buttons here -->
+            </div>
+
+            <button class="next-btn" id="next-button" onclick="nextQuestion()">Next Question</button>
         </div>
 
-        <div id="result-view" class="hide">
-            <div class="result-title">Quiz Completed! 🎉</div>
-            <div class="score-display" id="final-score">0 / 20</div>
-            <div class="feedback-msg" id="feedback-message">Not bad, keep listening!</div>
-            <button class="next-btn" onclick="restartQuiz()">Play Again</button>
+        <!-- End Game Screen -->
+        <div id="results-window" class="results-screen">
+            <h1>Quiz Complete!</h1>
+            <p>You have successfully identified the artists.</p>
+            <div class="final-score" id="final-score-text">0 / 20</div>
+            <p id="performance-feedback" style="color: var(--text-muted); margin-bottom: 24px;"></p>
+            <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
         </div>
     </div>
 
     <script>
-        // Official YouTube video embed IDs mapped with start time parameters to zoom right onto the artist
         const quizData = [
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/b/bb/230306_Ros%C3%A9.jpg", // Rosé
-        options: ["Jennie (BLACKPINK)", "Rosé (BLACKPINK)", "Jisoo (BLACKPINK)", "Lisa (BLACKPINK)"],
-        correct: 1
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/e/e3/Jungkook_for_Calvin_Klein_in_2023.jpg", // Jungkook
-        options: ["V (BTS)", "Jimin (BTS)", "Jungkook (BTS)", "Suga (BTS)"],
-        correct: 2
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/e/ec/Jang_Won-young_at_Shinsegae_Duty_Free_opening_event_on_December_20%2C_2023_%282%29.jpg", // Wonyoung
-        options: ["Karina (aespa)", "Jang Wonyoung (IVE)", "Minji (NewJeans)", "Sana (TWICE)"],
-        correct: 1
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/3/36/Felix_for_Marie_Claire_Korea_in_2023.jpg", // Felix
-        options: ["Felix (Stray Kids)", "Hyunjin (Stray Kids)", "Bang Chan (Stray Kids)", "Lee Know (Stray Kids)"],
-        correct: 0
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/1/18/Jennie_Kim_at_a_Chanel_Event_in_June_2023.jpg", // Jennie
-        options: ["Ningning (aespa)", "Joy (Red Velvet)", "Jennie (BLACKPINK)", "Momo (TWICE)"],
-        correct: 2
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/f/f9/V_for_Compose_Coffee_in_2024.jpg", // V
-        options: ["Jin (BTS)", "RM (BTS)", "J-Hope (BTS)", "V (BTS)"],
-        correct: 3
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/3/33/240111_Karina.jpg", // Karina
-        options: ["Karina (aespa)", "Winter (aespa)", "Giselle (aespa)", "Sullyoon (NMIXX)"],
-        correct: 0
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/8/87/230416_Kim_Min-ji.jpg", // Minji
-        options: ["Hanni (NewJeans)", "Haerin (NewJeans)", "Danielle (NewJeans)", "Minji (NewJeans)"],
-        correct: 3
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/f/f0/Sana_at_the_Prada_Mode_Seoul_event_in_September_2023.jpg", // Sana
-        options: ["Nayeon (TWICE)", "Sana (TWICE)", "Mina (TWICE)", "Tzuyu (TWICE)"],
-        correct: 1
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/e/e7/230531_Hyunjin.jpg", // Hyunjin
-        options: ["Han (Stray Kids)", "Yeonjun (TXT)", "Hyunjin (Stray Kids)", "Sunghoon (ENHYPEN)"],
-        correct: 2
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/3/30/Lisa_at_a_Bulgari_Event_in_May_2023.jpg", // Lisa
-        options: ["Lisa (BLACKPINK)", "Minnie ((G)I-DLE)", "Somi", "Moka (ILLIT)"],
-        correct: 0
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/a/ab/Cha_Eun-woo_at_Bvlgari_event_in_September_2023.jpg", // Cha Eunwoo
-        options: ["Jaehyun (NCT)", "Cha Eunwoo (ASTRO)", "Rowoon", "Mingyu (SEVENTEEN)"],
-        correct: 1
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/4/4b/Winter_for_Marie_Claire_Korea_in_2023.jpg", // Winter
-        options: ["Ningning (aespa)", "Winter (aespa)", "Kazuha (LE SSERAFIM)", "Eunbi"],
-        correct: 1
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/4/4c/Kim_Chae-won_for_Marie_Claire_Korea_in_2023.jpg", // Kim Chaewon
-        options: ["Sakura (LE SSERAFIM)", "Kim Chaewon (LE SSERAFIM)", "Yunjin (LE SSERAFIM)", "Rei (IVE)"],
-        correct: 1
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/3/33/Hanni_at_Gucci_Cruise_2024.jpg", // Hanni
-        options: ["Hanni (NewJeans)", "Danielle (NewJeans)", "Ahyeon (BABYMONSTER)", "Wonhee (ILLIT)"],
-        correct: 0
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/c/c5/IU_at_the_2022_Golden_Disc_Awards.jpg", // IU
-        options: ["Taeyeon", "IU", "Suzy", "Nayeon (TWICE)"],
-        correct: 1
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/7/77/Park_Ji-min_for_Dior_in_2023.jpg", // Jimin
-        options: ["Suga (BTS)", "J-Hope (BTS)", "Jimin (BTS)", "Jin (BTS)"],
-        correct: 2
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/9/91/Kim_Ji-soo_for_Dior_in_2023.jpg", // Jisoo
-        options: ["Jisoo (BLACKPINK)", "Irene (Red Velvet)", "Miyeon ((G)I-DLE)", "Sullyoon (NMIXX)"],
-        correct: 0
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/e/eb/Kim_Min-gyu_for_Marie_Claire_Korea_in_2023.jpg", // Mingyu
-        options: ["Hoshi (SEVENTEEN)", "Wonwoo (SEVENTEEN)", "Scoups (SEVENTEEN)", "Mingyu (SEVENTEEN)"],
-        correct: 3
-    },
-    {
-        img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/4/4e/Choi_Yeon-jun_for_Marie_Claire_Korea_in_2023.jpg", // Yeonjun
-        options: ["Soobin (TXT)", "Yeonjun (TXT)", "Beomgyu (TXT)", "Heeseung (ENHYPEN)"],
-        correct: 1
-    }
-];
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/b/bb/230306_Ros%C3%A9.jpg",
+                options: ["Jennie (BLACKPINK)", "Rosé (BLACKPINK)", "Jisoo (BLACKPINK)", "Lisa (BLACKPINK)"],
+                correct: 1
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/e/e3/Jungkook_for_Calvin_Klein_in_2023.jpg",
+                options: ["V (BTS)", "Jimin (BTS)", "Jungkook (BTS)", "Suga (BTS)"],
+                correct: 2
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/e/ec/Jang_Won-young_at_Shinsegae_Duty_Free_opening_event_on_December_20%2C_2023_%282%29.jpg",
+                options: ["Karina (aespa)", "Jang Wonyoung (IVE)", "Minji (NewJeans)", "Sana (TWICE)"],
+                correct: 1
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/3/36/Felix_for_Marie_Claire_Korea_in_2023.jpg",
+                options: ["Felix (Stray Kids)", "Hyunjin (Stray Kids)", "Bang Chan (Stray Kids)", "Lee Know (Stray Kids)"],
+                correct: 0
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/1/18/Jennie_Kim_at_a_Chanel_Event_in_June_2023.jpg",
+                options: ["Ningning (aespa)", "Joy (Red Velvet)", "Jennie (BLACKPINK)", "Momo (TWICE)"],
+                correct: 2
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/f/f9/V_for_Compose_Coffee_in_2024.jpg",
+                options: ["Jin (BTS)", "RM (BTS)", "J-Hope (BTS)", "V (BTS)"],
+                correct: 3
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/3/33/240111_Karina.jpg",
+                options: ["Karina (aespa)", "Winter (aespa)", "Giselle (aespa)", "Sullyoon (NMIXX)"],
+                correct: 0
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/8/87/230416_Kim_Min-ji.jpg",
+                options: ["Hanni (NewJeans)", "Haerin (NewJeans)", "Danielle (NewJeans)", "Minji (NewJeans)"],
+                correct: 3
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/f/f0/Sana_at_the_Prada_Mode_Seoul_event_in_September_2023.jpg",
+                options: ["Nayeon (TWICE)", "Sana (TWICE)", "Mina (TWICE)", "Tzuyu (TWICE)"],
+                correct: 1
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/e/e7/230531_Hyunjin.jpg",
+                options: ["Han (Stray Kids)", "Yeonjun (TXT)", "Hyunjin (Stray Kids)", "Sunghoon (ENHYPEN)"],
+                correct: 2
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/3/30/Lisa_at_a_Bulgari_Event_in_May_2023.jpg",
+                options: ["Lisa (BLACKPINK)", "Minnie ((G)I-DLE)", "Somi", "Moka (ILLIT)"],
+                correct: 0
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/a/ab/Cha_Eun-woo_at_Bvlgari_event_in_September_2023.jpg",
+                options: ["Jaehyun (NCT)", "Cha Eunwoo (ASTRO)", "Rowoon", "Mingyu (SEVENTEEN)"],
+                correct: 1
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/4/4b/Winter_for_Marie_Claire_Korea_in_2023.jpg",
+                options: ["Ningning (aespa)", "Winter (aespa)", "Kazuha (LE SSERAFIM)", "Eunbi"],
+                correct: 1
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/4/4c/Kim_Chae-won_for_Marie_Claire_Korea_in_2023.jpg",
+                options: ["Sakura (LE SSERAFIM)", "Kim Chaewon (LE SSERAFIM)", "Yunjin (LE SSERAFIM)", "Rei (IVE)"],
+                correct: 1
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/3/33/Hanni_at_Gucci_Cruise_2024.jpg",
+                options: ["Hanni (NewJeans)", "Danielle (NewJeans)", "Ahyeon (BABYMONSTER)", "Wonhee (ILLIT)"],
+                correct: 0
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/c/c5/IU_at_the_2022_Golden_Disc_Awards.jpg",
+                options: ["Taeyeon", "IU", "Suzy", "Nayeon (TWICE)"],
+                correct: 1
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/7/77/Park_Ji-min_for_Dior_in_2023.jpg",
+                options: ["Suga (BTS)", "J-Hope (BTS)", "Jimin (BTS)", "Jin (BTS)"],
+                correct: 2
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/9/91/Kim_Ji-soo_for_Dior_in_2023.jpg",
+                options: ["Jisoo (BLACKPINK)", "Irene (Red Velvet)", "Miyeon ((G)I-DLE)", "Sullyoon (NMIXX)"],
+                correct: 0
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/e/eb/Kim_Min-gyu_for_Marie_Claire_Korea_in_2023.jpg",
+                options: ["Hoshi (SEVENTEEN)", "Wonwoo (SEVENTEEN)", "Scoups (SEVENTEEN)", "Mingyu (SEVENTEEN)"],
+                correct: 3
+            },
+            {
+                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/4/4e/Choi_Yeon-jun_for_Marie_Claire_Korea_in_2023.jpg",
+                options: ["Soobin (TXT)", "Yeonjun (TXT)", "Beomgyu (TXT)", "Heeseung (ENHYPEN)"],
+                correct: 1
+            }
+        ];
 
         let currentQuestionIndex = 0;
         let score = 0;
 
-        const quizView = document.getElementById('quiz-view');
-        const resultView = document.getElementById('result-view');
-        const counterEl = document.getElementById('question-counter');
-        const progressBar = document.getElementById('progress-bar');
-        const videoFrame = document.getElementById('quiz-video-frame');
-        const optionsContainer = document.getElementById('options-container');
-        const nextButton = document.getElementById('next-button');
-        const finalScoreEl = document.getElementById('final-score');
-        const feedbackEl = document.getElementById('feedback-message');
-
-        function initQuiz() {
-            currentQuestionIndex = 0;
-            score = 0;
-            resultView.classList.add('hide');
-            quizView.classList.remove('hide');
-            loadQuestion();
-        }
-
         function loadQuestion() {
-            nextButton.classList.add('hide');
-            optionsContainer.innerHTML = '';
-            
             const currentQuestion = quizData[currentQuestionIndex];
             
-            counterEl.innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+            // Update Text Data
+            document.getElementById("progress-text").innerText = `Question ${currentQuestionIndex + 1}/${quizData.length}`;
+            document.getElementById("score-tracker").innerText = `Score: ${score}`;
+            
+            // Update Progress Bar Graphic
             const progressPercent = ((currentQuestionIndex) / quizData.length) * 100;
-            progressBar.style.width = `${progressPercent}%`;
+            document.getElementById("progress-bar").style.width = `${progressPercent}%`;
 
-            // Constructs embedded URL with controls hidden, muted, and auto-looping parameters
-            videoFrame.src = `https://www.youtube.com/embed/${currentQuestion.ytId}?start=${currentQuestion.start}&autoplay=1&mute=1&controls=0&modestbranding=1&loop=1&playlist=${currentQuestion.ytId}`;
-
-            currentQuestion.options.forEach((optionText, index) => {
-                const button = document.createElement('button');
-                button.classList.add('option-btn');
-                button.innerText = optionText;
-                button.addEventListener('click', () => selectAnswer(index, button));
+            // Inject Image
+            document.getElementById("idol-image").src = currentQuestion.img;
+            
+            // Rebuild Option Buttons
+            const optionsContainer = document.getElementById("options-container");
+            optionsContainer.innerHTML = "";
+            
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement("button");
+                button.className = "option-btn";
+                button.innerText = option;
+                button.onclick = () => selectOption(index);
                 optionsContainer.appendChild(button);
             });
+
+            // Hide Next Button initially
+            document.getElementById("next-button").style.display = "none";
         }
 
-        function selectAnswer(selectedIndex, clickedButton) {
+        function selectOption(selectedIndex) {
             const currentQuestion = quizData[currentQuestionIndex];
-            const allButtons = optionsContainer.querySelectorAll('.option-btn');
-
-            allButtons.forEach(btn => btn.disabled = true);
+            const buttons = document.querySelectorAll(".option-btn");
+            
+            // Freeze input
+            buttons.forEach(btn => btn.disabled = true);
 
             if (selectedIndex === currentQuestion.correct) {
-                clickedButton.classList.add('correct');
+                buttons[selectedIndex].classList.add("correct");
                 score++;
+                document.getElementById("score-tracker").innerText = `Score: ${score}`;
             } else {
-                clickedButton.classList.add('incorrect');
-                allButtons[currentQuestion.correct].classList.add('correct');
+                buttons[selectedIndex].classList.add("wrong");
+                buttons[currentQuestion.correct].classList.add("correct");
             }
 
-            nextButton.classList.remove('hide');
+            // Expose Next button
+            document.getElementById("next-button").style.display = "block";
         }
 
-        nextButton.addEventListener('click', () => {
+        function nextQuestion() {
             currentQuestionIndex++;
+            
             if (currentQuestionIndex < quizData.length) {
                 loadQuestion();
             } else {
                 showResults();
             }
-        });
+        }
 
         function showResults() {
-            progressBar.style.width = '100%';
-            videoFrame.src = ''; // Shut down the running video frame
-            quizView.classList.add('hide');
-            resultView.classList.remove('hide');
+            document.getElementById("quiz-window").style.display = "none";
+            document.getElementById("results-window").style.display = "block";
+            document.getElementById("final-score-text").innerText = `${score} / ${quizData.length}`;
             
-            finalScoreEl.innerText = `${score} / ${quizData.length}`;
+            let feedback = "";
+            if (score === quizData.length) feedback = "Ultimate Multi-stan Status achieved! 🌟 Perfect Score!";
+            else if (score >= 15) feedback = "Amazing job! You know your groups inside out! 🙌";
+            else if (score >= 10) feedback = "Not bad! You've got a solid footprint in the fandom.";
+            else feedback = "Time to stream some more music videos and try again! 🎵";
             
-            if (score === 20) {
-                feedbackEl.innerText = "Absolute Multistan Legend! You know everyone! 👑";
-            } else if (score >= 15) {
-                feedbackEl.innerText = "Certified K-Pop Expert! Your playlist must be incredible. 🔥";
-            } else if (score >= 10) {
-                feedbackEl.innerText = "Casual Fan! You know the headliners well. 👍";
-            } else {
-                feedbackEl.innerText = "Time to stream some more music videos and try again! 🎵";
-            }
+            document.getElementById("performance-feedback").innerText = feedback;
         }
 
         function restartQuiz() {
-            initQuiz();
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById("results-window").style.display = "none";
+            document.getElementById("quiz-window").style.display = "block";
+            loadQuestion();
         }
 
-        window.onload = initQuiz;
+        // Run app on initial window load
+        window.onload = loadQuestion;
     </script>
 </body>
 </html>
