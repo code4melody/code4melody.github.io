@@ -1,92 +1,401 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>Roots Bingo!</title>
-<script>
-var facts = ["Can sing this note given E note<br><img src='a_note.jpg' width='100px' />", "Can solve this integral (and perform special gesture)<br><img src='integral.png' width='75px' />", "Knows balanced chemical equation for cell respiration (exclude ATP)", "Can do 25 *regular* pushups in one go", "Can graph y = |x| using their arms", "Can say \"I love you\" in 5 different languages (excluding English)", "Knows what \"Hay un gato feo en mi casa\" means", "Can state what the 4th state of matter is", "Confident that they can solve today's Wordle in front of everyone", "Can name all the Infinity Stones and their colors (MCU version)", "Remembers the title of Rei teacher's favorite Disney Song", "Knows how many yards are in a mile", "Knows how many faces there are in an icosahedron", "Can tell you squares of a number from 1 to 20, without a calculator", "Can tell you the names of all the Harry Potter books, in reverse chronological order of release", "Can tell the sum of interior angles of an Octagon", "Knows what \"Les chiens sont meilleurs que les chats\" means", "Knows the accelation due to earth's gravity in m/(sec)^2", "Knows the chorus of \"Living Hope\" by memory", "Knows the value of Pi, up to 3 decial points", "Can name 15 Pokemons", "Can do horizontal OR vertical split", "Came out to Holy Habit morning prayer every day this week", "Can name 6 of Jacob's 13 children"];
-var factsSize = facts.length
-function setupBoard() {
-	var counter = 0;
-	var builder = "<table id='bingoBoard'>"
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate K-Pop Star Quiz</title>
+    <style>
+        :root {
+            --primary: #ff4a8d;
+            --primary-hover: #e03273;
+            --bg-dark: #121214;
+            --card-bg: #1e1e24;
+            --text-light: #ffffff;
+            --text-muted: #a0a0ab;
+            --correct: #4caf50;
+            --incorrect: #f44336;
+        }
 
-	for (var i = 0; i < 5; i++) {
-		builder += "<tr>";
-		for (var j = 0; j < 5; j++) {
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-			if (i == 2 && j == 2) {
-				builder += "<td class='bingoCell centerCell'>*FREE*</td>";
-			}
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-			else {
-				
-				var factIndex = Math.floor(Math.random() * factsSize);
-				builder += "<td class='bingoCell' onclick='enterName(this)'><span class='fact'>";
-				builder += facts[factIndex];
-				builder += "</span></td>";
+        .quiz-container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 550px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            text-align: center;
+            overflow: hidden;
+        }
 
-				facts.splice(factIndex, 1);
-				factsSize--;
-			}
-		}
+        h1 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
 
-		builder += "</tr>";
-	}
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background-color: #333;
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
 
-	builder += "</table>";
-	document.getElementById("board").innerHTML = builder;
-}
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
 
-function enterName(element) {
-	var name = prompt("Who fits this description? Enter their FULL name :D");
+        .stats-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
 
-	if (name !== null) {
-		element.innerHTML = "<span class='fact'>" + element.getElementsByClassName("fact")[0].innerHTML + "</span><br><br><span class='fullName'>" + name + "</span>";
-		element.style.backgroundColor = "#a0ffd2";
-	} 
-}
+        .image-viewport {
+            width: 100%;
+            height: 340px;
+            border-radius: 12px;
+            background-color: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            margin-bottom: 25px;
+            border: 2px solid #2a2a32;
+        }
 
-</script>
-<style>
-#header {
-	text-align: center;
-	background-color: #fff3b7;
-	font-family: sans-serif;
-	font-size: 3em;
-	padding: 15px;
-}
+        .image-viewport img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+        }
 
-#board {
-	font-family: sans-serif;
-	background-color: #b7efff;
-}
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
 
-#bingoBoard {
-	margin:  auto;
-}
+        .option-btn {
+            background-color: #2a2a32;
+            color: var(--text-light);
+            border: 2px solid transparent;
+            padding: 14px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
 
-.bingoCell {
-	width:  200px;
-	height:  200px;
-	border:  2px solid #52eaba;
-	border-radius: 5px;
-	border-spacing: 10px;
-	text-align: center;
-	background-color: white;
-}
+        .option-btn:hover:not([disabled]) {
+            background-color: #353540;
+            border-color: var(--primary);
+        }
 
-.centerCell {
-	background-color:  #ff9999;
-}
+        .option-btn[disabled] {
+            cursor: not-allowed;
+        }
 
-.fullName {
-	font-weight: bold;
-}
+        .option-btn.correct {
+            background-color: var(--correct) !important;
+            color: white;
+        }
 
-</style>
+        .option-btn.incorrect {
+            background-color: var(--incorrect) !important;
+            color: white;
+        }
+
+        .next-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-block;
+            transition: background 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .next-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .hide {
+            display: none !important;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .feedback-msg {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+    </style>
 </head>
-<body onload="setupBoard()">
-<div id="header">Roots Bingo!
-</div>
-<div id="board">
-</div>
+<body>
+
+    <div class="quiz-container">
+        <div id="quiz-view">
+            <h1>Guess the K-Pop Star!</h1>
+            <div class="stats-text" id="question-counter">Question 1 of 20</div>
+            
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+
+            <div class="image-viewport">
+                <img id="star-image" src="" alt="K-pop Idol Profile">
+            </div>
+
+            <div class="options-grid" id="options-container"></div>
+
+            <button id="next-button" class="next-btn hide">Next Question</button>
+        </div>
+
+        <div id="result-view" class="hide">
+            <div class="result-title">Quiz Completed! 🎉</div>
+            <div class="score-display" id="final-score">0 / 20</div>
+            <div class="feedback-msg" id="feedback-message">Not bad, keep listening!</div>
+            <button class="next-btn" onclick="restartQuiz()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Updated array using direct, unfonced raw image paths from unrestricted public servers
+        const quizData = [
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/1/18/Ros%C3%A9_at_Pre-Incheon_Airport_230911.png",
+                options: ["Jennie (BLACKPINK)", "Rosé (BLACKPINK)", "Jisoo (BLACKPINK)", "Lisa (BLACKPINK)"],
+                correct: 1
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/d/df/Jungkook_at_Incheon_Airport_230408.png",
+                options: ["V (BTS)", "Jimin (BTS)", "Jungkook (BTS)", "Suga (BTS)"],
+                correct: 2
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/1/15/Jang_Won-young_at_Incheon_Airport_on_March_4%2C_2024.jpg",
+                options: ["Karina (aespa)", "Jang Wonyoung (IVE)", "Minji (NewJeans)", "Sana (TWICE)"],
+                correct: 1
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Felix_at_Incheon_Airport_231129.png",
+                options: ["Felix (Stray Kids)", "Hyunjin (Stray Kids)", "Bang Chan (Stray Kids)", "Lee Know (Stray Kids)"],
+                correct: 0
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/b/ba/Jennie_Kim_at_Incheon_Airport_230302.png",
+                options: ["Ningning (aespa)", "Joy (Red Velvet)", "Jennie (BLACKPINK)", "Momo (TWICE)"],
+                correct: 2
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/b/b5/V_at_Incheon_Airport_230515.png",
+                options: ["Jin (BTS)", "RM (BTS)", "J-Hope (BTS)", "V (BTS)"],
+                correct: 3
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Yoo_Ji-min_at_Incheon_Airport_230508.png",
+                options: ["Karina (aespa)", "Winter (aespa)", "Giselle (aespa)", "Sullyoon (NMIXX)"],
+                correct: 0
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/8/82/Kim_Min-ji_at_Incheon_Airport_230303.png",
+                options: ["Hanni (NewJeans)", "Haerin (NewJeans)", "Danielle (NewJeans)", "Minji (NewJeans)"],
+                correct: 3
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/a/ab/Sana_at_Incheon_Airport_220726.png",
+                options: ["Nayeon (TWICE)", "Sana (TWICE)", "Mina (TWICE)", "Tzuyu (TWICE)"],
+                correct: 1
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/c/c5/Hwang_Hyun-jin_at_Incheon_Airport_230514.png",
+                options: ["Han (Stray Kids)", "Yeonjun (TXT)", "Hyunjin (Stray Kids)", "Sunghoon (ENHYPEN)"],
+                correct: 2
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/9/91/Lalisa_Manobal_at_Incheon_Airport_230303.png",
+                options: ["Lisa (BLACKPINK)", "Minnie ((G)I-DLE)", "Somi", "Moka (ILLIT)"],
+                correct: 0
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/a/ab/Cha_Eun-woo_at_Incheon_Airport_230616.png",
+                options: ["Jaehyun (NCT)", "Cha Eunwoo (ASTRO)", "Rowoon", "Mingyu (SEVENTEEN)"],
+                correct: 1
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Kim_Min-jeong_at_Incheon_Airport_230508.png",
+                options: ["Ningning (aespa)", "Winter (aespa)", "Kazuha (LE SSERAFIM)", "Eunbi"],
+                correct: 1
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/5/52/Kim_Chae-won_at_Incheon_Airport_221211.png",
+                options: ["Sakura (LE SSERAFIM)", "Kim Chaewon (LE SSERAFIM)", "Yunjin (LE SSERAFIM)", "Rei (IVE)"],
+                correct: 1
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/0/07/Hanni_at_Incheon_Airport_230222.png",
+                options: ["Hanni (NewJeans)", "Danielle (NewJeans)", "Ahyeon (BABYMONSTER)", "Wonhee (ILLIT)"],
+                correct: 0
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/7/77/IU_at_Incheon_Airport_240310.jpg",
+                options: ["Taeyeon", "IU", "Suzy", "Nayeon (TWICE)"],
+                correct: 1
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/0/0b/Park_Ji-min_at_Incheon_Airport_230513.png",
+                options: ["Suga (BTS)", "J-Hope (BTS)", "Jimin (BTS)", "Jin (BTS)"],
+                correct: 2
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Kim_Ji-soo_at_Incheon_Airport_230303.png",
+                options: ["Jisoo (BLACKPINK)", "Irene (Red Velvet)", "Miyeon ((G)I-DLE)", "Sullyoon (NMIXX)"],
+                correct: 0
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Kim_Min-gyu_at_Incheon_Airport_on_February_26%2C_240226.jpg",
+                options: ["Hoshi (SEVENTEEN)", "Wonwoo (SEVENTEEN)", "Scoups (SEVENTEEN)", "Mingyu (SEVENTEEN)"],
+                correct: 3
+            },
+            {
+                img: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Choi_Yeon-jun_at_Incheon_Airport_230303.png",
+                options: ["Soobin (TXT)", "Yeonjun (TXT)", "Beomgyu (TXT)", "Heeseung (ENHYPEN)"],
+                correct: 1
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const quizView = document.getElementById('quiz-view');
+        const resultView = document.getElementById('result-view');
+        const counterEl = document.getElementById('question-counter');
+        const progressBar = document.getElementById('progress-bar');
+        const starImage = document.getElementById('star-image');
+        const optionsContainer = document.getElementById('options-container');
+        const nextButton = document.getElementById('next-button');
+        const finalScoreEl = document.getElementById('final-score');
+        const feedbackEl = document.getElementById('feedback-message');
+
+        function initQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            resultView.classList.add('hide');
+            quizView.classList.remove('hide');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            nextButton.classList.add('hide');
+            optionsContainer.innerHTML = '';
+            
+            const currentQuestion = quizData[currentQuestionIndex];
+            
+            counterEl.innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+            const progressPercent = ((currentQuestionIndex) / quizData.length) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+
+            starImage.src = currentQuestion.img;
+
+            currentQuestion.options.forEach((optionText, index) => {
+                const button = document.createElement('button');
+                button.classList.add('option-btn');
+                button.innerText = optionText;
+                button.addEventListener('click', () => selectAnswer(index, button));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedIndex, clickedButton) {
+            const currentQuestion = quizData[currentQuestionIndex];
+            const allButtons = optionsContainer.querySelectorAll('.option-btn');
+
+            allButtons.forEach(btn => btn.disabled = true);
+
+            if (selectedIndex === currentQuestion.correct) {
+                clickedButton.classList.add('correct');
+                score++;
+            } else {
+                clickedButton.classList.add('incorrect');
+                allButtons[currentQuestion.correct].classList.add('correct');
+            }
+
+            nextButton.classList.remove('hide');
+        }
+
+        nextButton.addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        });
+
+        function showResults() {
+            progressBar.style.width = '100%';
+            quizView.classList.add('hide');
+            resultView.classList.remove('hide');
+            
+            finalScoreEl.innerText = `${score} / ${quizData.length}`;
+            
+            if (score === 20) {
+                feedbackEl.innerText = "Absolute Multistan Legend! You know everyone! 👑";
+            } else if (score >= 15) {
+                feedbackEl.innerText = "Certified K-Pop Expert! Your playlist must be incredible. 🔥";
+            } else if (score >= 10) {
+                feedbackEl.innerText = "Casual Fan! You know the headliners well. 👍";
+            } else {
+                feedbackEl.innerText = "Time to stream some more music videos and try again! 🎵";
+            }
+        }
+
+        function restartQuiz() {
+            initQuiz();
+        }
+
+        window.onload = initQuiz;
+    </script>
 </body>
 </html>
