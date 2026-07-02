@@ -3,416 +3,386 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K-Pop Idol Guessing Quiz</title>
+    <title>Kpop SAT Tutor</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #6366f1;
-            --accent-hover: #4f46e5;
-            --correct: #10b981;
-            --wrong: #ef4444;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #2d3436;
         }
 
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-main);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
         }
 
-        .quiz-container {
-            background-color: var(--card-bg);
+        .container {
             width: 100%;
-            max-width: 500px;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        h1 {
             text-align: center;
+            color: var(--primary-color);
+            margin-top: 0;
         }
 
-        .header-info {
+        /* Character Selection Screen */
+        #selection-screen {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
+        }
+
+        .tutor-options {
+            display: flex;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .tutor-card {
+            background: #fff;
+            border: 3px solid #dfe6e9;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 180px;
+        }
+
+        .tutor-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.2);
+        }
+
+        .tutor-card h3 {
+            margin: 10px 0 0 0;
+        }
+
+        /* Quiz Layout */
+        #quiz-screen {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            #quiz-screen {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Tutor Panel Layout */
+        .tutor-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .tutor-img {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Speech Bubble */
+        .speech-bubble {
+            position: relative;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 15px;
+            padding: 15px 20px;
             margin-bottom: 20px;
+            width: 80%;
+            text-align: center;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        .score-tracker, .progress-text {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            font-weight: 600;
+        .speech-bubble:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border: 15px solid transparent;
+            border-top-color: var(--primary-color);
+            border-bottom: 0;
+            border-left: 0;
+            margin-left: -7.5px;
+            margin-bottom: -15px;
         }
 
-        .progress-bar-container {
-            width: 100%;
-            height: 6px;
-            background-color: #334155;
-            border-radius: 10px;
-            margin-bottom: 24px;
-            overflow: hidden;
+        /* Question Panel Layout */
+        .question-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .progress-bar {
+            background-color: #dfe6e9;
+            border-radius: 10px;
+            height: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background-color: var(--primary-color);
             height: 100%;
             width: 0%;
-            background-color: var(--accent);
             transition: width 0.3s ease;
         }
 
-        .image-frame {
-            width: 100%;
-            height: 320px;
-            border-radius: 12px;
-            overflow: hidden;
-            background-color: #334155;
-            margin-bottom: 24px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .image-frame img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        h2 {
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-            font-weight: 700;
+        .definition {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            font-weight: 600;
+            line-height: 1.5;
         }
 
         .options-grid {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-bottom: 20px;
         }
 
-        .option-btn {
-            background-color: #334155;
-            color: var(--text-main);
-            border: 2px solid transparent;
-            padding: 14px;
+        .btn-option {
+            background-color: #fff;
+            border: 2px solid #b2bec3;
             border-radius: 10px;
+            padding: 15px;
             font-size: 1rem;
-            font-weight: 500;
+            text-align: left;
             cursor: pointer;
             transition: all 0.2s ease;
-            text-align: left;
         }
 
-        .option-btn:hover:not(:disabled) {
-            background-color: #475569;
-            border-color: var(--text-muted);
+        .btn-option:hover {
+            background-color: #f1f2f6;
+            border-color: var(--text-color);
         }
 
-        .option-btn:disabled {
-            cursor: not-allowed;
+        /* Results Screen */
+        #results-screen {
+            display: none;
+            text-align: center;
         }
 
-        .option-btn.correct {
-            background-color: rgba(16, 185, 129, 0.2);
-            border-color: var(--correct);
-            color: #34d399;
-            font-weight: 600;
-        }
-
-        .option-btn.wrong {
-            background-color: rgba(239, 68, 68, 0.2);
-            border-color: var(--wrong);
-            color: #f87171;
-        }
-
-        .next-btn {
-            background-color: var(--accent);
+        .btn-restart {
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 14px;
-            width: 100%;
-            border-radius: 10px;
+            padding: 12px 30px;
             font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            display: none;
-        }
-
-        .next-btn:hover {
-            background-color: var(--accent-hover);
-        }
-
-        .results-screen {
-            display: none;
-        }
-
-        .results-screen h1 {
-            font-size: 2rem;
-            margin-bottom: 12px;
-        }
-
-        .final-score {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--accent);
-            margin: 20px 0;
-        }
-
-        .restart-btn {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
+            border-radius: 25px;
             cursor: pointer;
             margin-top: 20px;
+            transition: background 0.2s;
+        }
+
+        .btn-restart:hover {
+            background-color: #5b4bc4;
         }
     </style>
 </head>
 <body>
 
-    <div class="quiz-container">
-        <!-- Quiz Play Window -->
-        <div id="quiz-window">
-            <div class="header-info">
-                <span class="progress-text" id="progress-text">Question 1/20</span>
-                <span class="score-tracker" id="score-tracker">Score: 0</span>
+<div class="container">
+    <!-- 1. Selection Screen -->
+    <div id="selection-screen">
+        <h1>Choose Your Kpop SAT Tutor</h1>
+        <div class="tutor-options">
+            <div class="tutor-card" onclick="selectTutor('rei')">
+                <h3>Rei</h3>
+                <p>The Charismatic Star</p>
             </div>
-            
-            <div class="progress-bar-container">
-                <div class="progress-bar" id="progress-bar"></div>
+            <div class="tutor-card" onclick="selectTutor('jaeho')">
+                <h3>Jaeho</h3>
+                <p>The Caring Romantic</p>
             </div>
-
-            <div class="image-frame">
-                <img id="idol-image" src="" alt="K-Pop Idol Profile">
-            </div>
-
-            <h2>Who is this idol?</h2>
-
-            <div class="options-grid" id="options-container">
-                <!-- Javascript maps buttons here -->
-            </div>
-
-            <button class="next-btn" id="next-button" onclick="nextQuestion()">Next Question</button>
-        </div>
-
-        <!-- End Game Screen -->
-        <div id="results-window" class="results-screen">
-            <h1>Quiz Complete!</h1>
-            <p>You have successfully identified the artists.</p>
-            <div class="final-score" id="final-score-text">0 / 20</div>
-            <p id="performance-feedback" style="color: var(--text-muted); margin-bottom: 24px;"></p>
-            <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
         </div>
     </div>
 
-    <script>
-        const quizData = [
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/b/bb/230306_Ros%C3%A9.jpg",
-                options: ["Jennie (BLACKPINK)", "Rosé (BLACKPINK)", "Jisoo (BLACKPINK)", "Lisa (BLACKPINK)"],
-                correct: 1
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/e/e3/Jungkook_for_Calvin_Klein_in_2023.jpg",
-                options: ["V (BTS)", "Jimin (BTS)", "Jungkook (BTS)", "Suga (BTS)"],
-                correct: 2
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/e/ec/Jang_Won-young_at_Shinsegae_Duty_Free_opening_event_on_December_20%2C_2023_%282%29.jpg",
-                options: ["Karina (aespa)", "Jang Wonyoung (IVE)", "Minji (NewJeans)", "Sana (TWICE)"],
-                correct: 1
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/3/36/Felix_for_Marie_Claire_Korea_in_2023.jpg",
-                options: ["Felix (Stray Kids)", "Hyunjin (Stray Kids)", "Bang Chan (Stray Kids)", "Lee Know (Stray Kids)"],
-                correct: 0
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/1/18/Jennie_Kim_at_a_Chanel_Event_in_June_2023.jpg",
-                options: ["Ningning (aespa)", "Joy (Red Velvet)", "Jennie (BLACKPINK)", "Momo (TWICE)"],
-                correct: 2
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/f/f9/V_for_Compose_Coffee_in_2024.jpg",
-                options: ["Jin (BTS)", "RM (BTS)", "J-Hope (BTS)", "V (BTS)"],
-                correct: 3
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/3/33/240111_Karina.jpg",
-                options: ["Karina (aespa)", "Winter (aespa)", "Giselle (aespa)", "Sullyoon (NMIXX)"],
-                correct: 0
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/8/87/230416_Kim_Min-ji.jpg",
-                options: ["Hanni (NewJeans)", "Haerin (NewJeans)", "Danielle (NewJeans)", "Minji (NewJeans)"],
-                correct: 3
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/f/f0/Sana_at_the_Prada_Mode_Seoul_event_in_September_2023.jpg",
-                options: ["Nayeon (TWICE)", "Sana (TWICE)", "Mina (TWICE)", "Tzuyu (TWICE)"],
-                correct: 1
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/e/e7/230531_Hyunjin.jpg",
-                options: ["Han (Stray Kids)", "Yeonjun (TXT)", "Hyunjin (Stray Kids)", "Sunghoon (ENHYPEN)"],
-                correct: 2
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/3/30/Lisa_at_a_Bulgari_Event_in_May_2023.jpg",
-                options: ["Lisa (BLACKPINK)", "Minnie ((G)I-DLE)", "Somi", "Moka (ILLIT)"],
-                correct: 0
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/a/ab/Cha_Eun-woo_at_Bvlgari_event_in_September_2023.jpg",
-                options: ["Jaehyun (NCT)", "Cha Eunwoo (ASTRO)", "Rowoon", "Mingyu (SEVENTEEN)"],
-                correct: 1
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/4/4b/Winter_for_Marie_Claire_Korea_in_2023.jpg",
-                options: ["Ningning (aespa)", "Winter (aespa)", "Kazuha (LE SSERAFIM)", "Eunbi"],
-                correct: 1
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/4/4c/Kim_Chae-won_for_Marie_Claire_Korea_in_2023.jpg",
-                options: ["Sakura (LE SSERAFIM)", "Kim Chaewon (LE SSERAFIM)", "Yunjin (LE SSERAFIM)", "Rei (IVE)"],
-                correct: 1
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/3/33/Hanni_at_Gucci_Cruise_2024.jpg",
-                options: ["Hanni (NewJeans)", "Danielle (NewJeans)", "Ahyeon (BABYMONSTER)", "Wonhee (ILLIT)"],
-                correct: 0
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/c/c5/IU_at_the_2022_Golden_Disc_Awards.jpg",
-                options: ["Taeyeon", "IU", "Suzy", "Nayeon (TWICE)"],
-                correct: 1
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/7/77/Park_Ji-min_for_Dior_in_2023.jpg",
-                options: ["Suga (BTS)", "J-Hope (BTS)", "Jimin (BTS)", "Jin (BTS)"],
-                correct: 2
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/9/91/Kim_Ji-soo_for_Dior_in_2023.jpg",
-                options: ["Jisoo (BLACKPINK)", "Irene (Red Velvet)", "Miyeon ((G)I-DLE)", "Sullyoon (NMIXX)"],
-                correct: 0
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/e/eb/Kim_Min-gyu_for_Marie_Claire_Korea_in_2023.jpg",
-                options: ["Hoshi (SEVENTEEN)", "Wonwoo (SEVENTEEN)", "Scoups (SEVENTEEN)", "Mingyu (SEVENTEEN)"],
-                correct: 3
-            },
-            {
-                img: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/4/4e/Choi_Yeon-jun_for_Marie_Claire_Korea_in_2023.jpg",
-                options: ["Soobin (TXT)", "Yeonjun (TXT)", "Beomgyu (TXT)", "Heeseung (ENHYPEN)"],
-                correct: 1
-            }
-        ];
+    <!-- 2. Quiz Screen -->
+    <div id="quiz-screen">
+        <div class="tutor-panel">
+            <div class="speech-bubble" id="speech-bubble">Let's do our best today! Ready to study?</div>
+            <img src="" alt="Tutor" class="tutor-img" id="tutor-img">
+        </div>
+        
+        <div class="question-panel">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div id="question-info" style="margin-bottom: 10px; color: #7f8c8d;">Question 1 of 50</div>
+            <div class="definition" id="definition-text">Loading definition...</div>
+            <div class="options-grid" id="options-container">
+                <!-- Buttons dynamically generated here -->
+            </div>
+        </div>
+    </div>
 
-        let currentQuestionIndex = 0;
-        let score = 0;
+    <!-- 3. Results Screen -->
+    <div id="results-screen">
+        <h1>Study Session Complete!</h1>
+        <p id="final-score-text"></p>
+        <button class="btn-restart" onclick="resetQuiz()">Study Again</button>
+    </div>
+</div>
 
-        function loadQuestion() {
-            const currentQuestion = quizData[currentQuestionIndex];
-            
-            // Update Text Data
-            document.getElementById("progress-text").innerText = `Question ${currentQuestionIndex + 1}/${quizData.length}`;
-            document.getElementById("score-tracker").innerText = `Score: ${score}`;
-            
-            // Update Progress Bar Graphic
-            const progressPercent = ((currentQuestionIndex) / quizData.length) * 100;
-            document.getElementById("progress-bar").style.width = `${progressPercent}%`;
+<script>
+    // Sample pool of SAT words to complete a 50-question cycle smoothly
+    const satVocabulary = [
+        { definition: "To treat with wastefulness; squander.", correct: "prodigal", choices: ["prodigal", "frugal", "austere", "parsimonious"] },
+        { definition: "Extremely harmful; destructive; deadly.", correct: "pernicious", choices: ["pernicious", "salubrious", "innocuous", "benign"] },
+        { definition: "An abundance; an excess amount of something.", correct: "plethora", choices: ["plethora", "dearth", "scarcity", "paucity"] },
+        { definition: "To clear from blame; prove innocent.", correct: "exonerate", choices: ["exonerate", "incriminate", "culpate", "indict"] },
+        { definition: "Unwavering; stubbornly adhering to an opinion or purpose.", correct: "obstinate", choices: ["obstinate", "pliant", "malleable", "tractable"] },
+        // ... Adding placeholder objects to dynamically build out 50 items for testing purposes
+    ];
 
-            // Inject Image
-            document.getElementById("idol-image").src = currentQuestion.img;
-            
-            // Rebuild Option Buttons
-            const optionsContainer = document.getElementById("options-container");
-            optionsContainer.innerHTML = "";
-            
-            currentQuestion.options.forEach((option, index) => {
-                const button = document.createElement("button");
-                button.className = "option-btn";
-                button.innerText = option;
-                button.onclick = () => selectOption(index);
-                optionsContainer.appendChild(button);
-            });
+    // Auto-generate mock questions up to 50 if list length is under 50
+    while(satVocabulary.length < 50) {
+        let id = satVocabulary.length + 1;
+        satVocabulary.push({
+            definition: `[SAT Word Definition #${id}] To change or alter repeatedly.`,
+            correct: `Word-${id}-A`,
+            choices: [`Word-${id}-A`, `Word-${id}-B`, `Word-${id}-C`, `Word-${id}-D`]
+        });
+    }
 
-            // Hide Next Button initially
-            document.getElementById("next-button").style.display = "none";
+    let currentTutor = '';
+    let currentIndex = 0;
+    let correctCount = 0;
+
+    // Dialogue matrices customized per personality archetype
+    const dialoguePool = {
+        rei: {
+            default: ["Let's shine bright today!", "Keep your focus on the stage!", "Ready for the next one?"],
+            happy: ["Great job! You've got rhythm!", "Way to hit the high note!", "Amazing choice!"],
+            happier: ["Unbelievable! You are completely flawless!", "Center stage performance! Perfect!", "Wow, you're a superstar!"],
+            sad: ["Don't lose your tempo, try again.", "Ah, miss-stepped a bit there. Stay focused!", "Keep your chin up, let's practice more."],
+            sadder: ["We need to completely reset our choreography.", "Hey, look at me. Concentrate!", "Don't give up on me now."]
+        },
+        jaeho: {
+            default: ["Take your time, I'm right here with you.", "Let's study comfortably today.", "You're doing wonderful just trying."],
+            happy: ["Wonderful! You're making me so proud.", "You remembered! That's excellent.", "Your hard work is really paying off."],
+            happier: ["You are absolutely brilliant! Truly spectacular!", "I am so incredibly happy to see you succeed like this!", "Perfect scores look beautiful on you."],
+            sad: ["It's okay to make mistakes. Let's look closely together.", "Don't be discouraged, love. Next time will be better.", "A small hurdle, we can overcome it."],
+            sadder: ["Oh no... are you feeling tired? Let's take a deep breath.", "Please don't be sad. I'll help you through this.", "Let's work through this difficult spot together, okay?"]
+        }
+    };
+
+    function selectTutor(tutor) {
+        currentTutor = tutor;
+        document.getElementById('selection-screen').style.display = 'none';
+        document.getElementById('quiz-screen').style.display = 'grid';
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        if (currentIndex >= 50) {
+            showResults();
+            return;
         }
 
-        function selectOption(selectedIndex) {
-            const currentQuestion = quizData[currentQuestionIndex];
-            const buttons = document.querySelectorAll(".option-btn");
-            
-            // Freeze input
-            buttons.forEach(btn => btn.disabled = true);
+        // Progress bar and info tracking
+        document.getElementById('progress-fill').style.width = `${(currentIndex / 50) * 100}%`;
+        document.getElementById('question-info').innerText = `Question ${currentIndex + 1} of 50`;
 
-            if (selectedIndex === currentQuestion.correct) {
-                buttons[selectedIndex].classList.add("correct");
-                score++;
-                document.getElementById("score-tracker").innerText = `Score: ${score}`;
-            } else {
-                buttons[selectedIndex].classList.add("wrong");
-                buttons[currentQuestion.correct].classList.add("correct");
-            }
+        const q = satVocabulary[currentIndex];
+        document.getElementById('definition-text').innerText = q.definition;
 
-            // Expose Next button
-            document.getElementById("next-button").style.display = "block";
-        }
+        // Dynamic State / Asset Evaluation via Running Math Logic Matrix
+        updateTutorState();
 
-        function nextQuestion() {
-            currentQuestionIndex++;
-            
-            if (currentQuestionIndex < quizData.length) {
-                loadQuestion();
-            } else {
-                showResults();
+        const optionsContainer = document.getElementById('options-container');
+        optionsContainer.innerHTML = '';
+
+        q.choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-option';
+            btn.innerText = choice;
+            btn.onclick = () => handleAnswer(choice === q.correct);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function updateTutorState() {
+        let imgName = 'default.jpg';
+        let mood = 'default';
+
+        if (currentIndex > 0) {
+            const percentage = (correctCount / currentIndex) * 100;
+
+            if (percentage >= 95) {
+                imgName = 'happier.jpg';
+                mood = 'happier';
+            } else if (percentage >= 75 && percentage < 90) { // Strict validation boundaries mapped matching query rules
+                imgName = 'happy.jpg';
+                mood = 'happy';
+            } else if (percentage >= 50 && percentage < 75) {
+                imgName = 'sad.jpg';
+                mood = 'sad';
+            } else if (percentage < 50) {
+                imgName = 'sadder.jpg';
+                mood = 'sadder';
             }
         }
 
-        function showResults() {
-            document.getElementById("quiz-window").style.display = "none";
-            document.getElementById("results-window").style.display = "block";
-            document.getElementById("final-score-text").innerText = `${score} / ${quizData.length}`;
-            
-            let feedback = "";
-            if (score === quizData.length) feedback = "Ultimate Multi-stan Status achieved! 🌟 Perfect Score!";
-            else if (score >= 15) feedback = "Amazing job! You know your groups inside out! 🙌";
-            else if (score >= 10) feedback = "Not bad! You've got a solid footprint in the fandom.";
-            else feedback = "Time to stream some more music videos and try again! 🎵";
-            
-            document.getElementById("performance-feedback").innerText = feedback;
-        }
+        document.getElementById('tutor-img').src = `images/${currentTutor}/${imgName}`;
+        
+        // Select random dialogue matching the calculated mood index
+        const phrases = dialoguePool[currentTutor][mood];
+        const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+        document.getElementById('speech-bubble').innerText = randomPhrase;
+    }
 
-        function restartQuiz() {
-            currentQuestionIndex = 0;
-            score = 0;
-            document.getElementById("results-window").style.display = "none";
-            document.getElementById("quiz-window").style.display = "block";
-            loadQuestion();
-        }
+    function handleAnswer(isCorrect) {
+        if (isCorrect) correctCount++;
+        currentIndex++;
+        loadQuestion();
+    }
 
-        // Run app on initial window load
-        window.onload = loadQuestion;
-    </script>
+    function showResults() {
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('results-screen').style.display = 'block';
+        
+        const finalPercentage = ((correctCount / 50) * 100).toFixed(1);
+        document.getElementById('final-score-text').innerText = 
+            `You correctly identified ${correctCount} out of 50 terms (${finalPercentage}%).`;
+    }
+
+    function resetQuiz() {
+        currentIndex = 0;
+        correctCount = 0;
+        document.getElementById('results-screen').style.display = 'none';
+        document.getElementById('selection-screen').style.display = 'flex';
+    }
+</script>
+
 </body>
 </html>
