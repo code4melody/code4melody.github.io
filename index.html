@@ -139,7 +139,7 @@
             border-radius: 10px;
             height: 10px;
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             overflow: hidden;
         }
 
@@ -148,6 +148,43 @@
             height: 100%;
             width: 0%;
             transition: width 0.3s ease;
+        }
+
+        /* Score Tracker Row */
+        .score-tracker-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .current-accuracy {
+            color: var(--primary-color);
+            background-color: #eee9ff;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-speaker {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            transition: transform 0.2s;
+        }
+
+        .btn-speaker:hover {
+            transform: scale(1.1);
         }
 
         .definition {
@@ -177,28 +214,6 @@
         .btn-option:hover {
             background-color: #f1f2f6;
             border-color: var(--text-color);
-        }
-
-        /* Audio Controls Block */
-        .audio-controls {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-speaker {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            transition: transform 0.2s;
-        }
-
-        .btn-speaker:hover {
-            transform: scale(1.1);
         }
 
         /* Results Screen */
@@ -277,7 +292,6 @@
 <body>
 
 <div class="container">
-    <!-- 1. Selection Screen -->
     <div id="selection-screen">
         <h1>Choose Your Kpop SAT Tutor</h1>
         <div class="tutor-options">
@@ -292,7 +306,6 @@
         </div>
     </div>
 
-    <!-- 2. Quiz Screen -->
     <div id="quiz-screen">
         <div class="tutor-panel">
             <div class="speech-bubble" id="speech-bubble">Let's do our best today! Ready to study?</div>
@@ -303,16 +316,20 @@
             <div class="progress-bar">
                 <div class="progress-fill" id="progress-fill"></div>
             </div>
-            <div class="audio-controls">
-                <div id="question-info" style="color: #7f8c8d;">Question 1 of 50</div>
-                <button class="btn-speaker" onclick="repeatAudio()" title="Repeat question aloud">🔊</button>
+            
+            <div class="score-tracker-row">
+                <div class="audio-controls">
+                    <div id="question-info" style="color: #7f8c8d;">Question 1 of 50</div>
+                    <button class="btn-speaker" onclick="repeatAudio()" title="Repeat question aloud">🔊</button>
+                </div>
+                <div class="current-accuracy" id="accuracy-display">Current Accuracy: --</div>
             </div>
+
             <div class="definition" id="definition-text">Loading definition...</div>
             <div class="options-grid" id="options-container"></div>
         </div>
     </div>
 
-    <!-- 3. Results Screen -->
     <div id="results-screen">
         <h1>Study Session Complete!</h1>
         <p id="final-score-text"></p>
@@ -377,6 +394,7 @@
     let currentTutor = '';
     let currentIndex = 0;
     let correctCount = 0;
+    let audioCtx = null;
 
     const dialoguePool = {
         rei: {
@@ -395,7 +413,47 @@
         }
     };
 
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    }
+
+    function playSoundEffect(isCorrect) {
+        initAudio();
+        const now = audioCtx.currentTime;
+
+        if (isCorrect) {
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            notes.forEach((freq, index) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now + (index * 0.06));
+                gain.gain.setValueAtTime(0.15, now + (index * 0.06));
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + (index * 0.06) + 0.3);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + (index * 0.06));
+                osc.stop(now + (index * 0.06) + 0.3);
+            });
+        } else {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(180, now);
+            osc.frequency.linearRampToValueAtTime(110, now + 0.35);
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.35);
+        }
+    }
+
     function selectTutor(tutor) {
+        initAudio();
         currentTutor = tutor;
         document.getElementById('selection-screen').style.display = 'none';
         document.getElementById('quiz-screen').style.display = 'grid';
@@ -410,6 +468,9 @@
 
         document.getElementById('progress-fill').style.width = `${(currentIndex / 50) * 100}%`;
         document.getElementById('question-info').innerText = `Question ${currentIndex + 1} of 50`;
+
+        // Update real-time accuracy percentages layout
+        updateAccuracyDisplay();
 
         const q = satVocabulary[currentIndex];
         document.getElementById('definition-text').innerText = q.definition;
@@ -427,28 +488,36 @@
             optionsContainer.appendChild(btn);
         });
 
-        // Speak definition and options automatically on new question
         speakText(q.definition, q.choices);
     }
 
-    // Text-to-Speech Engine
-    function speakText(definition, choices) {
-        // Cancel any audio currently queued up or playing
-        window.speechSynthesis.cancel();
+    function updateAccuracyDisplay() {
+        const display = document.getElementById('accuracy-display');
+        if (currentIndex === 0) {
+            display.innerText = "Accuracy: 100%";
+        } else {
+            const runningPercentage = ((correctCount / currentIndex) * 100).toFixed(0);
+            display.innerText = `Score: ${correctCount}/${currentIndex} (${runningPercentage}%)`;
+        }
+    }
 
-        // Format string cleanly to sound natural
-        let fullTextToSpeak = `The definition is: ${definition}. Your choices are: ${choices.join(', ')}.`;
+    function speakText(definition, choices) {
+        window.speechSynthesis.cancel();
+        let fullTextToSpeak = `The definition is: ${definition}. Now, choose the right word: ${choices.join(', ')}.`;
         
         let utterance = new SpeechSynthesisUtterance(fullTextToSpeak);
-        
-        // Match a natural male voice profile if available on user device
         let voices = window.speechSynthesis.getVoices();
-        let targetVoice = voices.find(voice => voice.name.toLowerCase().includes('male') && voice.lang.startsWith('en')) || 
-                      voices.find(voice => voice.lang.startsWith('en'));
-                      
-        if (targetVoice) utterance.voice = targetVoice;
         
-        utterance.rate = 0.95; // Slightly paced for vocabulary clarity
+        let kpopVoice = 
+            voices.find(v => v.lang.toLowerCase() === 'en-kr') ||
+            voices.find(v => v.name.toLowerCase().includes('google male') && v.lang.startsWith('en')) ||
+            voices.find(v => v.lang.startsWith('en'));
+                      
+        if (kpopVoice) utterance.voice = kpopVoice;
+        
+        utterance.rate = 1.05;  
+        utterance.pitch = 1.15; 
+        
         window.speechSynthesis.speak(utterance);
     }
 
@@ -487,10 +556,13 @@
     }
 
     function handleAnswer(isCorrect) {
-        window.speechSynthesis.cancel(); // Mute remaining choices audio if user clicks early
+        window.speechSynthesis.cancel(); 
+        playSoundEffect(isCorrect);
+        
         if (isCorrect) correctCount++;
         currentIndex++;
-        loadQuestion();
+        
+        setTimeout(loadQuestion, 400);
     }
 
     function showResults() {
@@ -510,7 +582,6 @@
         document.getElementById('selection-screen').style.display = 'flex';
     }
 
-    // Chrome/Safari voice loading patch requirement
     if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
         speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
     }
