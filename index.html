@@ -179,6 +179,28 @@
             border-color: var(--text-color);
         }
 
+        /* Audio Controls Block */
+        .audio-controls {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-speaker {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+
+        .btn-speaker:hover {
+            transform: scale(1.1);
+        }
+
         /* Results Screen */
         #results-screen {
             display: none;
@@ -255,6 +277,7 @@
 <body>
 
 <div class="container">
+    <!-- 1. Selection Screen -->
     <div id="selection-screen">
         <h1>Choose Your Kpop SAT Tutor</h1>
         <div class="tutor-options">
@@ -269,6 +292,7 @@
         </div>
     </div>
 
+    <!-- 2. Quiz Screen -->
     <div id="quiz-screen">
         <div class="tutor-panel">
             <div class="speech-bubble" id="speech-bubble">Let's do our best today! Ready to study?</div>
@@ -279,12 +303,16 @@
             <div class="progress-bar">
                 <div class="progress-fill" id="progress-fill"></div>
             </div>
-            <div id="question-info" style="margin-bottom: 10px; color: #7f8c8d;">Question 1 of 50</div>
+            <div class="audio-controls">
+                <div id="question-info" style="color: #7f8c8d;">Question 1 of 50</div>
+                <button class="btn-speaker" onclick="repeatAudio()" title="Repeat question aloud">🔊</button>
+            </div>
             <div class="definition" id="definition-text">Loading definition...</div>
             <div class="options-grid" id="options-container"></div>
         </div>
     </div>
 
+    <!-- 3. Results Screen -->
     <div id="results-screen">
         <h1>Study Session Complete!</h1>
         <p id="final-score-text"></p>
@@ -293,7 +321,6 @@
 </div>
 
 <script>
-    // 50 Real High-Frequency SAT Vocabulary Words
     const satVocabulary = [
         { definition: "To treat with wastefulness; squander or spend recklessly.", correct: "prodigal", choices: ["prodigal", "frugal", "austere", "parsimonious"] },
         { definition: "Extremely harmful; highly destructive, insidious, or deadly.", correct: "pernicious", choices: ["pernicious", "salubrious", "innocuous", "benign"] },
@@ -399,6 +426,35 @@
             btn.onclick = () => handleAnswer(choice === q.correct);
             optionsContainer.appendChild(btn);
         });
+
+        // Speak definition and options automatically on new question
+        speakText(q.definition, q.choices);
+    }
+
+    // Text-to-Speech Engine
+    function speakText(definition, choices) {
+        // Cancel any audio currently queued up or playing
+        window.speechSynthesis.cancel();
+
+        // Format string cleanly to sound natural
+        let fullTextToSpeak = `The definition is: ${definition}. Your choices are: ${choices.join(', ')}.`;
+        
+        let utterance = new SpeechSynthesisUtterance(fullTextToSpeak);
+        
+        // Match a natural male voice profile if available on user device
+        let voices = window.speechSynthesis.getVoices();
+        let targetVoice = voices.find(voice => voice.name.toLowerCase().includes('male') && voice.lang.startsWith('en')) || 
+                      voices.find(voice => voice.lang.startsWith('en'));
+                      
+        if (targetVoice) utterance.voice = targetVoice;
+        
+        utterance.rate = 0.95; // Slightly paced for vocabulary clarity
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function repeatAudio() {
+        const q = satVocabulary[currentIndex];
+        if (q) speakText(q.definition, q.choices);
     }
 
     function updateTutorState() {
@@ -431,12 +487,14 @@
     }
 
     function handleAnswer(isCorrect) {
+        window.speechSynthesis.cancel(); // Mute remaining choices audio if user clicks early
         if (isCorrect) correctCount++;
         currentIndex++;
         loadQuestion();
     }
 
     function showResults() {
+        window.speechSynthesis.cancel();
         document.getElementById('quiz-screen').style.display = 'none';
         document.getElementById('results-screen').style.display = 'block';
         
@@ -450,6 +508,11 @@
         correctCount = 0;
         document.getElementById('results-screen').style.display = 'none';
         document.getElementById('selection-screen').style.display = 'flex';
+    }
+
+    // Chrome/Safari voice loading patch requirement
+    if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
     }
 </script>
 
