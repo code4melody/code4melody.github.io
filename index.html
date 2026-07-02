@@ -82,12 +82,6 @@
             gap: 30px;
         }
 
-        @media (max-width: 768px) {
-            #quiz-screen {
-                grid-template-columns: 1fr;
-            }
-        }
-
         /* Tutor Panel Layout */
         .tutor-panel {
             display: flex;
@@ -206,12 +200,61 @@
         .btn-restart:hover {
             background-color: #5b4bc4;
         }
+
+        /* Responsive Mobile Design Media Queries */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+                border-radius: 12px;
+            }
+
+            #quiz-screen {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .tutor-img {
+                width: 160px;
+                height: 160px;
+            }
+
+            .speech-bubble {
+                width: 90%;
+                font-size: 0.95rem;
+                padding: 10px 15px;
+                margin-bottom: 15px;
+            }
+
+            .definition {
+                font-size: 1.05rem;
+                margin-bottom: 15px;
+            }
+
+            .btn-option {
+                padding: 12px;
+                font-size: 0.95rem;
+            }
+
+            .tutor-options {
+                flex-direction: column;
+                gap: 15px;
+                width: 100%;
+            }
+
+            .tutor-card {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- 1. Selection Screen -->
     <div id="selection-screen">
         <h1>Choose Your Kpop SAT Tutor</h1>
         <div class="tutor-options">
@@ -226,7 +269,6 @@
         </div>
     </div>
 
-    <!-- 2. Quiz Screen -->
     <div id="quiz-screen">
         <div class="tutor-panel">
             <div class="speech-bubble" id="speech-bubble">Let's do our best today! Ready to study?</div>
@@ -239,13 +281,10 @@
             </div>
             <div id="question-info" style="margin-bottom: 10px; color: #7f8c8d;">Question 1 of 50</div>
             <div class="definition" id="definition-text">Loading definition...</div>
-            <div class="options-grid" id="options-container">
-                <!-- Buttons dynamically generated here -->
-            </div>
+            <div class="options-grid" id="options-container"></div>
         </div>
     </div>
 
-    <!-- 3. Results Screen -->
     <div id="results-screen">
         <h1>Study Session Complete!</h1>
         <p id="final-score-text"></p>
@@ -254,31 +293,64 @@
 </div>
 
 <script>
-    // Sample pool of SAT words to complete a 50-question cycle smoothly
+    // 50 Real High-Frequency SAT Vocabulary Words
     const satVocabulary = [
-        { definition: "To treat with wastefulness; squander.", correct: "prodigal", choices: ["prodigal", "frugal", "austere", "parsimonious"] },
-        { definition: "Extremely harmful; destructive; deadly.", correct: "pernicious", choices: ["pernicious", "salubrious", "innocuous", "benign"] },
-        { definition: "An abundance; an excess amount of something.", correct: "plethora", choices: ["plethora", "dearth", "scarcity", "paucity"] },
-        { definition: "To clear from blame; prove innocent.", correct: "exonerate", choices: ["exonerate", "incriminate", "culpate", "indict"] },
-        { definition: "Unwavering; stubbornly adhering to an opinion or purpose.", correct: "obstinate", choices: ["obstinate", "pliant", "malleable", "tractable"] },
-        // ... Adding placeholder objects to dynamically build out 50 items for testing purposes
+        { definition: "To treat with wastefulness; squander or spend recklessly.", correct: "prodigal", choices: ["prodigal", "frugal", "austere", "parsimonious"] },
+        { definition: "Extremely harmful; highly destructive, insidious, or deadly.", correct: "pernicious", choices: ["pernicious", "salubrious", "innocuous", "benign"] },
+        { definition: "An excessive abundance; an overproduction or surplus of something.", correct: "plethora", choices: ["plethora", "dearth", "scarcity", "paucity"] },
+        { definition: "To completely clear from blame; prove innocent of a wrongdoing.", correct: "exonerate", choices: ["exonerate", "incriminate", "culpate", "indict"] },
+        { definition: "Unwavering; stubbornly adhering to an opinion, purpose, or course.", correct: "obstinate", choices: ["obstinate", "pliant", "malleable", "tractable"] },
+        { definition: "Hardworking, diligent, and showing great care and effort.", correct: "sedulous", choices: ["sedulous", "indolent", "lethargic", "slothful"] },
+        { definition: "To mitigate, lessen, or ease the severity of pain or distress.", correct: "assuage", choices: ["assuage", "aggravate", "exacerbate", "provoke"] },
+        { definition: "Doubtful, uncertain, or object of suspicion; hesitating.", correct: "dubious", choices: ["dubious", "indubitable", "unequivocal", "certain"] },
+        { definition: "Short-lived; fleeting; lasting for a very brief period.", correct: "ephemeral", choices: ["ephemeral", "perpetual", "enduring", "perennial"] },
+        { definition: "Arrogant, overbearing, and supercilious; looking down on others.", correct: "haughty", choices: ["haughty", "humble", "deferential", "modest"] },
+        { definition: "Lacking clarity; bright, clear, or easily understood.", correct: "lucid", choices: ["lucid", "obscure", "opaque", "vague"] },
+        { definition: "A tiny, scarce, or inadequate amount of something.", correct: "paucity", choices: ["paucity", "profusion", "surplus", "glut"] },
+        { definition: "Very talkative; fond of long, rambling chatter.", correct: "garrulous", choices: ["garrulous", "laconic", "reticent", "taciturn"] },
+        { definition: "To praise highly; laud, eulogize, or acclaim.", correct: "extol", choices: ["extol", "denigrate", "disparage", "condemn"] },
+        { definition: "Devoid of intelligence, depth, or matter; empty and shallow.", correct: "vacuous", choices: ["vacuous", "profound", "astute", "insightful"] },
+        { definition: "Characterized by severe self-discipline and abstention from luxury.", correct: "austere", choices: ["austere", "indulgent", "sybaritic", "ostentatious"] },
+        { definition: "Quick to recover from misfortune; elastic or adaptable.", correct: "resilient", choices: ["resilient", "fragile", "brittle", "vulnerable"] },
+        { definition: "A state of temporary disuse, suspension, or inactivity.", correct: "abeyance", choices: ["abeyance", "continuation", "resurgence", "activity"] },
+        { definition: "An absolute preference or strong liking for something.", correct: "predilection", choices: ["predilection", "aversion", "antipathy", "loathing"] },
+        { definition: "Bold, daring, and reckless; unconstrained by convention.", correct: "audacious", choices: ["audacious", "timid", "circumspect", "meek"] },
+        { definition: "To support or validate with structural proof or evidence.", correct: "corroborate", choices: ["corroborate", "refute", "contradict", "gainsay"] },
+        { definition: "A harsh, discordant, and unpleasant mixture of sounds.", correct: "cacophony", choices: ["cacophony", "euphony", "harmony", "melody"] },
+        { definition: "An unpredictable, sudden, or eccentric change of mind or behavior.", correct: "capricious", choices: ["capricious", "steadfast", "resolute", "immutable"] },
+        { definition: "To trick, deceive, or cheat through clever misrepresentation.", correct: "chicanery", choices: ["chicanery", "candor", "veracity", "honesty"] },
+        { definition: "In office; currently holding a specified position or post.", correct: "incumbent", choices: ["incumbent", "applicant", "predecessor", "successor"] },
+        { definition: "Secret, stealthy, or surreptitious; trying to avoid notice.", correct: "furtive", choices: ["furtive", "overt", "conspicuous", "blatant"] },
+        { definition: "Habitual, deeply ingrained, and unlikely to change.", correct: "inveterate", choices: ["inveterate", "transient", "ephemeral", "incipient"] },
+        { definition: "Easily angered; bad-tempered, irritable, or petulant.", correct: "irascible", choices: ["irascible", "placid", "affable", "genial"] },
+        { definition: "Using very few words; concise to the point of seeming rude.", correct: "laconic", choices: ["laconic", "verbose", "loquacious", "garrulous"] },
+        { definition: "Generous, noble, and forgiving toward a rival or less powerful person.", correct: "magnanimous", choices: ["magnanimous", "vindictive", "malevolent", "petty"] },
+        { definition: "Trite, overused, and lacking originality; commonplace.", correct: "banal", choices: ["banal", "novel", "innovative", "profound"] },
+        { definition: "A sentimental longing or wistful affection for the past.", correct: "nostalgia", choices: ["nostalgia", "foresight", "anticipation", "apathy"] },
+        { definition: "Dull, unimaginative, and commonplace; lacking poetic beauty.", correct: "prosaic", choices: ["prosaic", "sublime", "transcendent", "inspired"] },
+        { definition: "Stubbornly disobedient; resisting authority or control.", correct: "recalcitrant", choices: ["recalcitrant", "compliant", "submissive", "amenable"] },
+        { definition: "Sparing or minimal in the choice of food or drink; temperate.", correct: "abstemious", choices: ["abstemious", "gluttonous", "voracious", "epicurean"] },
+        { definition: "An item or detail that is custom, made-to-order, or commissioned.", correct: "bespoke", choices: ["bespoke", "generic", "standardized", "mass-produced"] },
+        { definition: "Widespread, universal, or found everywhere simultaneously.", correct: "ubiquitous", choices: ["ubiquitous", "scarce", "localized", "rare"] },
+        { definition: "To change or swing back and forth indecisively between opinions.", correct: "vacillate", choices: ["vacillate", "resolve", "adhere", "conclude"] },
+        { definition: "Extremely intensely enthusiastic, passionate, or fervent.", correct: "zealous", choices: ["zealous", "apathetic", "indifferent", "lackadaisical"] },
+        { definition: "To renounce, disavow, or formally reject a formerly held belief.", correct: "abjure", choices: ["abjure", "espouse", "embrace", "assert"] },
+        { definition: "Obscure, profound, and difficult for an ordinary mind to understand.", correct: "recondite", choices: ["recondite", "manifest", "patent", "obvious"] },
+        { definition: "The dynamic collection of structural attributes or components.", correct: "matrix", choices: ["matrix", "void", "periphery", "isolation"] },
+        { definition: "Harmonious accord; a state of mutual agreement.", correct: "concord", choices: ["concord", "discord", "strife", "friction"] },
+        { definition: "To flash or sparkle brilliantly; to be witty or animated.", correct: "scintillate", choices: ["scintillate", "extinguish", "stagnate", "fade"] },
+        { definition: "A completely perfect, flawless embodiment or example of a quality.", correct: "epitome", choices: ["epitome", "anomaly", "deviation", "antithesis"] },
+        { definition: "An item or idea belonging to a period other than its correct timeline.", correct: "anachronism", choices: ["anachronism", "synchrony", "archetype", "prototype"] },
+        { definition: "To wander away from the primary path or central topic.", correct: "digress", choices: ["digress", "persist", "converge", "direct"] },
+        { definition: "To demand or specify a requirement as part of an agreement.", correct: "stipulate", choices: ["stipulate", "imply", "invalidate", "revoke"] },
+        { definition: "Stupid, foolish, or completely mindless and pointless.", correct: "fatuous", choices: ["fatuous", "sagacious", "prudent", "shrewd"] },
+        { definition: "Existing from birth; inborn, natural, or inherent.", correct: "innate", choices: ["innate", "acquired", "learned", "incidental"] }
     ];
-
-    // Auto-generate mock questions up to 50 if list length is under 50
-    while(satVocabulary.length < 50) {
-        let id = satVocabulary.length + 1;
-        satVocabulary.push({
-            definition: `[SAT Word Definition #${id}] To change or alter repeatedly.`,
-            correct: `Word-${id}-A`,
-            choices: [`Word-${id}-A`, `Word-${id}-B`, `Word-${id}-C`, `Word-${id}-D`]
-        });
-    }
 
     let currentTutor = '';
     let currentIndex = 0;
     let correctCount = 0;
 
-    // Dialogue matrices customized per personality archetype
     const dialoguePool = {
         rei: {
             default: ["Let's shine bright today!", "Keep your focus on the stage!", "Ready for the next one?"],
@@ -309,14 +381,12 @@
             return;
         }
 
-        // Progress bar and info tracking
         document.getElementById('progress-fill').style.width = `${(currentIndex / 50) * 100}%`;
         document.getElementById('question-info').innerText = `Question ${currentIndex + 1} of 50`;
 
         const q = satVocabulary[currentIndex];
         document.getElementById('definition-text').innerText = q.definition;
 
-        // Dynamic State / Asset Evaluation via Running Math Logic Matrix
         updateTutorState();
 
         const optionsContainer = document.getElementById('options-container');
@@ -341,7 +411,7 @@
             if (percentage >= 95) {
                 imgName = 'happier.jpg';
                 mood = 'happier';
-            } else if (percentage >= 75 && percentage < 90) { // Strict validation boundaries mapped matching query rules
+            } else if (percentage >= 75 && percentage < 90) {
                 imgName = 'happy.jpg';
                 mood = 'happy';
             } else if (percentage >= 50 && percentage < 75) {
@@ -355,7 +425,6 @@
 
         document.getElementById('tutor-img').src = `images/${currentTutor}/${imgName}`;
         
-        // Select random dialogue matching the calculated mood index
         const phrases = dialoguePool[currentTutor][mood];
         const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
         document.getElementById('speech-bubble').innerText = randomPhrase;
